@@ -90,7 +90,7 @@ Implementado:
 - vitrine estática de produtos demonstrativos;
 - links sociais como placeholders;
 - carrinho apenas visual, com `R$ 0,00` e contador `0`;
-- metadata com domínio planejado: `https://abc_artes.ias-nexus-automacao.com.br`.
+- metadata com domínio planejado: `https://abc-artes.ias-nexus-automacao.com.br`.
 
 Fora do escopo desta versão:
 
