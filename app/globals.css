@@ -83,9 +83,10 @@ button:focus-visible {
 }
 
 .topbar {
-  background: var(--cream);
+  background: var(--paper);
   font-size: 0.82rem;
   color: #4f424d;
+  border-bottom: 1px solid rgba(243, 181, 210, 0.45);
 }
 
 .topbar__inner {
@@ -125,18 +126,11 @@ button:focus-visible {
 }
 
 .brand-row {
-  background:
-    linear-gradient(rgba(255, 255, 255, 0.84), rgba(255, 255, 255, 0.9)),
-    repeating-radial-gradient(
-      circle at 16px 22px,
-      rgba(247, 131, 191, 0.22) 0 2px,
-      transparent 2px 22px
-    ),
-    var(--paper);
+  background: var(--paper);
 }
 
 .brand-row__inner {
-  min-height: 116px;
+  min-height: 98px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -192,6 +186,10 @@ button:focus-visible {
   box-shadow: 0 12px 24px rgba(217, 58, 135, 0.22);
 }
 
+.nav-tile--cta {
+  background: rgba(255, 255, 255, 0.14);
+}
+
 .primary-cta svg {
   width: 18px;
   height: 18px;
@@ -204,7 +202,7 @@ button:focus-visible {
 
 .main-nav__inner {
   display: grid;
-  grid-template-columns: repeat(5, minmax(118px, 1fr));
+  grid-template-columns: repeat(6, minmax(108px, 1fr));
 }
 
 .nav-tile {
@@ -924,7 +922,7 @@ p {
   .main-nav__inner {
     width: max-content;
     min-width: 100%;
-    grid-template-columns: repeat(5, 128px);
+    grid-template-columns: repeat(6, 128px);
   }
 
   .category-grid,
@@ -968,7 +966,7 @@ p {
   }
 
   .brand-row__inner {
-    min-height: 138px;
+    min-height: 110px;
     flex-direction: column;
     justify-content: center;
     gap: 14px;
@@ -995,15 +993,14 @@ p {
     font-size: 0.62rem;
   }
 
-  .primary-cta {
-    min-height: 40px;
-    padding-inline: 18px;
-  }
-
   .nav-tile {
     min-height: 70px;
     padding: 7px 2px;
     font-size: 0.62rem;
+  }
+
+  .nav-tile--cta {
+    min-width: 0;
   }
 
   .nav-tile svg {

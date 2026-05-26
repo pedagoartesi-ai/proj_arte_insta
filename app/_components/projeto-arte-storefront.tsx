@@ -329,10 +329,6 @@ export function ProjetoArteStorefront({
                   <span className="brand-mark__script">Artes que Ensinam</span>
                   <span className="brand-mark__byline">por Simone Pereira Lima</span>
                 </a>
-                <a className="primary-cta" href="#produtos">
-                  Ver materiais
-                  <Send aria-hidden="true" />
-                </a>
               </div>
             </div>
 
@@ -353,6 +349,10 @@ export function ProjetoArteStorefront({
                     R$ {subtotalCents === 0 ? "0,00" : subtotalLabel.replace("R$", "").trim()} <small>{cartCount}</small>
                   </strong>
                 </button>
+                <a href="#produtos" className="nav-tile nav-tile--cta">
+                  <Send aria-hidden="true" />
+                  <span>Ver materiais</span>
+                </a>
                 <a href="#sobre" className="nav-tile">
                   <UserRound aria-hidden="true" />
                   <span>Sobre</span>
