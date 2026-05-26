@@ -82,28 +82,37 @@ button:focus-visible {
   box-shadow: 0 12px 28px rgba(238, 95, 162, 0.12);
 }
 
-.topbar {
+.masthead {
   background: var(--paper);
-  font-size: 0.82rem;
-  color: #4f424d;
   border-bottom: 1px solid rgba(243, 181, 210, 0.45);
 }
 
-.topbar__inner {
-  min-height: 34px;
-  display: flex;
+.masthead__inner {
+  min-height: 74px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  gap: 22px;
+  gap: 18px;
 }
 
-.topbar a {
+.masthead__info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 0.76rem;
+  color: #4f424d;
+  transform: translateY(4px);
+}
+
+.masthead__info a {
   display: inline-flex;
   align-items: center;
   gap: 7px;
   font-weight: 700;
+  white-space: nowrap;
 }
 
-.topbar svg {
+.masthead__info svg {
   width: 15px;
   height: 15px;
 }
@@ -112,7 +121,10 @@ button:focus-visible {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-left: auto;
+}
+
+.masthead__social {
+  justify-self: end;
 }
 
 .social-mini a {
@@ -125,24 +137,12 @@ button:focus-visible {
   box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.08);
 }
 
-.brand-row {
-  background: var(--paper);
-}
-
-.brand-row__inner {
-  min-height: 98px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 28px;
-  position: relative;
-}
-
 .brand-mark {
   display: grid;
   justify-items: center;
   line-height: 1;
   text-align: center;
+  padding: 4px 0;
 }
 
 .brand-mark__abc {
@@ -171,28 +171,8 @@ button:focus-visible {
   text-transform: uppercase;
 }
 
-.primary-cta {
-  position: absolute;
-  right: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  min-height: 44px;
-  padding: 0 22px;
-  border-radius: 999px;
-  background: var(--pink-500);
-  color: var(--paper);
-  font-weight: 900;
-  box-shadow: 0 12px 24px rgba(217, 58, 135, 0.22);
-}
-
 .nav-tile--cta {
   background: rgba(255, 255, 255, 0.14);
-}
-
-.primary-cta svg {
-  width: 18px;
-  height: 18px;
 }
 
 .main-nav {
@@ -275,7 +255,9 @@ button:focus-visible {
 
 .hero-art {
   position: relative;
-  min-height: 360px;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  min-height: clamp(430px, 62vh, 740px);
   background:
     linear-gradient(90deg, rgba(255, 240, 246, 0.78), rgba(255, 255, 255, 0.94)),
     var(--paper);
@@ -283,8 +265,8 @@ button:focus-visible {
 }
 
 .hero-art__image {
-  object-fit: contain;
-  object-position: center;
+  object-fit: cover;
+  object-position: center center;
 }
 
 .intro-strip {
@@ -908,14 +890,15 @@ p {
 
 @media (max-width: 980px) {
   .masthead__inner {
-    grid-template-columns: 1fr;
-    justify-items: center;
-    padding: 12px 0;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    justify-items: stretch;
+    padding: 8px 0;
+    gap: 10px;
   }
 
-  .masthead__info,
-  .masthead__social {
-    justify-content: center;
+  .masthead__info {
+    font-size: 0.7rem;
+    gap: 10px;
   }
 
   .main-nav__inner {
@@ -952,8 +935,20 @@ p {
 
   .masthead__inner {
     min-height: 0;
-    gap: 10px;
-    padding: 12px 0 10px;
+    gap: 8px;
+    padding: 8px 0 6px;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  }
+
+  .masthead__info {
+    font-size: 0.62rem;
+    gap: 8px;
+    transform: translateY(2px);
+  }
+
+  .social-mini a {
+    width: 24px;
+    height: 24px;
   }
 
   .brand-mark {
@@ -972,7 +967,7 @@ p {
   }
 
   .brand-mark__byline {
-    font-size: 0.62rem;
+    font-size: 0.56rem;
   }
 
   .nav-tile {
