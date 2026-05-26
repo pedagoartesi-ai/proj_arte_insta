@@ -91,10 +91,11 @@ button:focus-visible {
   position: relative;
   min-height: 72px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 18px;
-  padding-block: 8px 6px;
+  padding-top: 4px;
+  padding-bottom: 0;
 }
 
 .masthead__info {
@@ -104,6 +105,8 @@ button:focus-visible {
   font-size: 0.66rem;
   color: #4f424d;
   padding-left: 4px;
+  align-self: flex-start;
+  margin-top: 2px;
 }
 
 .masthead__info a {
@@ -128,6 +131,8 @@ button:focus-visible {
 .masthead__social {
   margin-left: auto;
   padding-right: 4px;
+  align-self: flex-start;
+  margin-top: 1px;
 }
 
 .social-mini a {
