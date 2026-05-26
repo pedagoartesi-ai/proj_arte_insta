@@ -108,6 +108,16 @@ export function ProjetoArteStorefront({
     [categories],
   );
 
+  const categoryCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const product of products) {
+      counts.set(product.activityTypeSlug, (counts.get(product.activityTypeSlug) ?? 0) + 1);
+    }
+    return counts;
+  }, [products]);
+
+  const activeCategoryLabel = activeCategory === "all" ? "Todas as atividades" : categoryBySlug.get(activeCategory)?.name ?? "Categoria";
+
   const filteredProducts = useMemo(() => {
     if (activeCategory === "all") return products;
     return products.filter((product) => product.activityTypeSlug === activeCategory);
@@ -380,71 +390,88 @@ export function ProjetoArteStorefront({
           </div>
         </section>
 
-        <section className={`section section--light ${filtersOpen ? "section--filters-open" : ""}`} id="categorias">
+        <section className="section section--light" id="categorias">
           <div className="container">
             <div className="section-heading">
               <span className="eyebrow">Categorias</span>
               <h2>Filtre por categoria</h2>
-              <p>Abra os filtros e refine a vitrine sem poluir a página inicial.</p>
+              <p>Abra o painel de categorias quando quiser refinar a busca.</p>
             </div>
+            <div className="filter-hint filter-hint--inline">
+              <strong>Filtro ativo:</strong> {activeCategoryLabel}. Clique em <strong>Categorias</strong> no menu para abrir o painel.
+            </div>
+          </div>
+        </section>
 
-            {filtersOpen ? (
-              <>
-                <div className="filter-strip" role="tablist" aria-label="Filtrar atividades">
-                  <button
-                    type="button"
-                    className={`filter-chip ${activeCategory === "all" ? "filter-chip--active" : ""}`}
-                    onClick={() => {
-                      setActiveCategory("all");
-                      setCurrentPage(1);
-                    }}
-                  >
-                    Todas as atividades
-                  </button>
-                  {categories.map((category) => (
+        {filtersOpen ? (
+          <div className="category-modal-backdrop" role="presentation" onClick={() => setFiltersOpen(false)}>
+            <div
+              className="category-modal"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Categorias"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="category-modal__header">
+                <h2>Categorias</h2>
+                <button type="button" className="modal-close" onClick={() => setFiltersOpen(false)} aria-label="Fechar categorias">
+                  ×
+                </button>
+              </div>
+              <div className="category-grid category-grid--compact">
+                {categories.map((category) => {
+                  const Icon = categoryIcons[category.slug] ?? BadgeCheck;
+                  const active = activeCategory === category.slug;
+                  const count = categoryCounts.get(category.slug) ?? 0;
+                  return (
                     <button
                       type="button"
-                      className={`filter-chip ${activeCategory === category.slug ? "filter-chip--active" : ""}`}
+                      className={`category-item ${active ? "category-item--active" : ""}`}
+                      key={category.slug}
                       onClick={() => {
                         setActiveCategory(category.slug);
                         setCurrentPage(1);
                         setFiltersOpen(false);
                       }}
-                      key={category.slug}
                     >
-                      {category.name}
+                      <Icon aria-hidden="true" />
+                      <h3>{category.name}</h3>
+                      <p>{category.description}</p>
+                      <span className="category-count">{count}</span>
                     </button>
-                  ))}
-                </div>
-
-                <div className="category-grid category-grid--compact">
-                  {categories.map((category) => {
-                    const Icon = categoryIcons[category.slug] ?? BadgeCheck;
-                    const active = activeCategory === category.slug;
-                    return (
-                      <button
-                        type="button"
-                        className={`category-item ${active ? "category-item--active" : ""}`}
-                        key={category.slug}
-                        onClick={() => {
-                          setActiveCategory(category.slug);
-                          setCurrentPage(1);
-                          setFiltersOpen(false);
-                        }}
-                      >
-                        <Icon aria-hidden="true" />
-                        <h3>{category.name}</h3>
-                        <p>{category.description}</p>
-                      </button>
-                    );
-                  })}
-                </div>
-              </>
-            ) : (
-              <div className="filter-hint">Clique em <strong>Categorias</strong> no menu para abrir os filtros.</div>
-            )}
+                  );
+                })}
+              </div>
+              <div className="filter-strip filter-strip--modal" role="tablist" aria-label="Filtrar atividades">
+                <button
+                  type="button"
+                  className={`filter-chip ${activeCategory === "all" ? "filter-chip--active" : ""}`}
+                  onClick={() => {
+                    setActiveCategory("all");
+                    setCurrentPage(1);
+                    setFiltersOpen(false);
+                  }}
+                >
+                  Todas as atividades
+                </button>
+                {categories.map((category) => (
+                  <button
+                    type="button"
+                    className={`filter-chip ${activeCategory === category.slug ? "filter-chip--active" : ""}`}
+                    onClick={() => {
+                      setActiveCategory(category.slug);
+                      setCurrentPage(1);
+                      setFiltersOpen(false);
+                    }}
+                    key={`${category.slug}-chip`}
+                  >
+                    {category.name}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
-        </section>
+        ) : null}
 
         <section className="section products-section" id="produtos">
           <div className="container products-layout">
