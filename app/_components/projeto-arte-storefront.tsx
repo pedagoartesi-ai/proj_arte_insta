@@ -615,10 +615,10 @@ export function ProjetoArteStorefront({
                 <Mail aria-hidden="true" />
                 <span>Email para a Simone</span>
               </button>
-              <button type="button" className="contact-card contact-card--disabled" disabled aria-disabled="true">
+              <a className="contact-card" href={whatsappUrl || "#contato"} target={whatsappUrl ? "_blank" : undefined} rel={whatsappUrl ? "noreferrer" : undefined} aria-label="Contato pelo WhatsApp">
                 <MessageCircle aria-hidden="true" />
                 <span>Suporte pelo WhatsApp</span>
-              </button>
+              </a>
             </div>
             {contactEmailOpen ? (
               <div className="category-modal-backdrop" role="presentation" onClick={() => setContactEmailOpen(false)}>
