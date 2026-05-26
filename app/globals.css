@@ -88,20 +88,22 @@ button:focus-visible {
 }
 
 .masthead__inner {
-  min-height: 64px;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  position: relative;
+  min-height: 72px;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 18px;
+  padding-block: 8px 6px;
 }
 
 .masthead__info {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 0.7rem;
+  gap: 10px;
+  font-size: 0.66rem;
   color: #4f424d;
-  transform: translateY(5px);
+  padding-left: 4px;
 }
 
 .masthead__info a {
@@ -124,12 +126,13 @@ button:focus-visible {
 }
 
 .masthead__social {
-  justify-self: end;
+  margin-left: auto;
+  padding-right: 4px;
 }
 
 .social-mini a {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   justify-content: center;
   border-radius: 999px;
   background: var(--pink-500);
@@ -138,16 +141,21 @@ button:focus-visible {
 }
 
 .brand-mark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -52%);
   display: grid;
   justify-items: center;
   line-height: 1;
   text-align: center;
   padding: 4px 0;
+  width: max-content;
 }
 
 .brand-mark__abc {
   color: var(--pink-600);
-  font-size: clamp(2.1rem, 4vw, 4rem);
+  font-size: clamp(1.9rem, 3vw, 2.85rem);
   font-weight: 1000;
   text-shadow:
     2px 2px 0 var(--paper),
@@ -155,17 +163,17 @@ button:focus-visible {
 }
 
 .brand-mark__script {
-  margin-top: -8px;
+  margin-top: -10px;
   color: #2e272d;
   font-family: "Brush Script MT", "Segoe Script", cursive;
-  font-size: clamp(1.8rem, 3.5vw, 3.5rem);
+  font-size: clamp(1.45rem, 2.5vw, 2.4rem);
   font-weight: 700;
 }
 
 .brand-mark__byline {
-  margin-top: 7px;
+  margin-top: 4px;
   color: var(--muted);
-  font-size: 0.68rem;
+  font-size: 0.55rem;
   font-weight: 900;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -889,15 +897,14 @@ p {
 
 @media (max-width: 980px) {
   .masthead__inner {
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-    justify-items: stretch;
-    padding: 8px 0;
-    gap: 10px;
+    min-height: 68px;
+    padding: 7px 0 5px;
+    gap: 12px;
   }
 
   .masthead__info {
-    font-size: 0.7rem;
-    gap: 10px;
+    font-size: 0.64rem;
+    gap: 8px;
   }
 
   .main-nav__inner {
@@ -933,16 +940,14 @@ p {
   }
 
   .masthead__inner {
-    min-height: 0;
+    min-height: 62px;
     gap: 8px;
-    padding: 8px 0 6px;
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    padding: 6px 0 4px;
   }
 
   .masthead__info {
-    font-size: 0.62rem;
-    gap: 8px;
-    transform: translateY(2px);
+    font-size: 0.58rem;
+    gap: 6px;
   }
 
   .social-mini a {
