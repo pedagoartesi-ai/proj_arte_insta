@@ -6,28 +6,28 @@ Fechar o fluxo de compra em página própria, com Stripe, Resend e entrega de PD
 ## Etapas
 
 ### 1) Catálogo e filtros
-- [ ] Carregar categorias reais
-- [ ] Filtrar produtos por categoria
-- [ ] Manter paginação/organização da vitrine
-- [ ] Validar layout responsivo
+- [x] Carregar categorias reais
+- [x] Filtrar produtos por categoria
+- [x] Manter paginação/organização da vitrine
+- [x] Validar layout responsivo
 
 ### 2) Verificação de email do comprador
-- [ ] Solicitar código por email via Resend
-- [ ] Validar código antes de liberar a compra
-- [ ] Guardar token de verificação temporário
-- [ ] Bloquear checkout sem email verificado
+- [x] Solicitar código por email via Resend
+- [x] Validar código antes de liberar a compra
+- [x] Guardar token de verificação temporário
+- [x] Bloquear checkout sem email verificado
 
 ### 3) Checkout embutido
-- [ ] Criar sessão Stripe em modo embedded
-- [ ] Renderizar checkout na própria página
-- [ ] Evitar redirect externo como fluxo principal
-- [ ] Manter carrinho com múltiplos itens
+- [x] Criar sessão Stripe em modo embedded
+- [x] Renderizar checkout na própria página
+- [x] Evitar redirect externo como fluxo principal
+- [x] Manter carrinho com múltiplos itens
 
 ### 4) Webhook e entrega
-- [ ] Processar `checkout.session.completed`
-- [ ] Persistir pedido e itens
-- [ ] Enviar PDF por email com Resend
-- [ ] Registrar eventos do Stripe
+- [x] Processar `checkout.session.completed`
+- [x] Persistir pedido e itens
+- [x] Enviar PDF por email com Resend
+- [x] Registrar eventos do Stripe
 
 ### 5) Finalização
 - [ ] `pnpm lint`
