@@ -644,12 +644,6 @@ export function ProjetoArteStorefront({
             <a href="#produtos">Produtos</a>
           </div>
           <div>
-            <h2>Categorias</h2>
-            {categories.map((category) => (
-              <a href="#categorias" key={category.slug}>{category.name}</a>
-            ))}
-          </div>
-          <div>
             <h2>Sociais</h2>
             {socialLinks.map((social) => (
               <a href={social.href} key={social.label}>
@@ -657,6 +651,9 @@ export function ProjetoArteStorefront({
                 {social.label}
               </a>
             ))}
+            <button type="button" className="footer-filter-link" onClick={openCategoryFilters}>
+              Abrir categorias
+            </button>
           </div>
         </div>
         <div className="footer-bottom">
