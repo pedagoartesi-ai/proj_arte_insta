@@ -788,14 +788,29 @@ p {
   width: 100%;
 }
 
+.contact-card--disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.contact-card--disabled:disabled {
+  color: #6f6270;
+  box-shadow: none;
+}
+
 .contact-mailbox {
   display: grid;
   gap: 14px;
-  margin-top: 18px;
   padding: 18px;
   border: 1px solid #f1c5db;
   border-radius: var(--radius);
   background: rgba(255, 255, 255, 0.78);
+}
+
+.contact-modal .contact-mailbox {
+  border: 0;
+  padding: 0;
+  background: transparent;
 }
 
 .contact-mailbox label {

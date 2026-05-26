@@ -611,38 +611,54 @@ export function ProjetoArteStorefront({
               </p>
             </div>
             <div className="contact-actions">
-              <button type="button" className="contact-card" onClick={() => setContactEmailOpen((value) => !value)}>
+              <button type="button" className="contact-card" onClick={() => setContactEmailOpen(true)}>
                 <Mail aria-hidden="true" />
                 <span>Email para a Simone</span>
               </button>
-              <a className="contact-card" href={whatsappUrl || "#contato"} target={whatsappUrl ? "_blank" : undefined} rel={whatsappUrl ? "noreferrer" : undefined} aria-label="Contato pelo WhatsApp">
+              <button type="button" className="contact-card contact-card--disabled" disabled aria-disabled="true">
                 <MessageCircle aria-hidden="true" />
                 <span>Suporte pelo WhatsApp</span>
-              </a>
+              </button>
             </div>
             {contactEmailOpen ? (
-              <div className="contact-mailbox">
-                <label>
-                  Assunto
-                  <input
-                    type="text"
-                    value={contactEmailSubject}
-                    onChange={(e) => setContactEmailSubject(e.target.value)}
-                    placeholder="Assunto do email"
-                  />
-                </label>
-                <label>
-                  Mensagem
-                  <textarea
-                    value={contactEmailBody}
-                    onChange={(e) => setContactEmailBody(e.target.value)}
-                    placeholder="Escreva sua mensagem para pedagoartesi@gmail.com"
-                    rows={5}
-                  />
-                </label>
-                <a className="checkout-button contact-mailbox__send" href={contactMailto}>
-                  <Send aria-hidden="true" /> Enviar email
-                </a>
+              <div className="category-modal-backdrop" role="presentation" onClick={() => setContactEmailOpen(false)}>
+                <div
+                  className="category-modal contact-modal"
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label="Enviar email para a Simone"
+                  onClick={(event) => event.stopPropagation()}
+                >
+                  <div className="category-modal__header">
+                    <h2>Enviar email</h2>
+                    <button type="button" className="modal-close" onClick={() => setContactEmailOpen(false)} aria-label="Fechar contato">
+                      ×
+                    </button>
+                  </div>
+                  <div className="contact-mailbox">
+                    <label>
+                      Assunto
+                      <input
+                        type="text"
+                        value={contactEmailSubject}
+                        onChange={(e) => setContactEmailSubject(e.target.value)}
+                        placeholder="Assunto do email"
+                      />
+                    </label>
+                    <label>
+                      Mensagem
+                      <textarea
+                        value={contactEmailBody}
+                        onChange={(e) => setContactEmailBody(e.target.value)}
+                        placeholder="Escreva sua mensagem para pedagoartesi@gmail.com"
+                        rows={5}
+                      />
+                    </label>
+                    <a className="checkout-button contact-mailbox__send" href={contactMailto}>
+                      <Send aria-hidden="true" /> Enviar email
+                    </a>
+                  </div>
+                </div>
               </div>
             ) : null}
           </div>
