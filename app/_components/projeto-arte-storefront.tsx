@@ -337,21 +337,14 @@ export function ProjetoArteStorefront({
                   <Home aria-hidden="true" />
                   <span>Início</span>
                 </a>
-                <button type="button" className="nav-tile nav-tile--button" onClick={openCategoryFilters}>
-                  <LayoutGrid aria-hidden="true" />
-                  <span>Categorias</span>
-                </button>
-                <button type="button" className="nav-tile nav-tile--button" onClick={openCart}>
-                  <ShoppingCart aria-hidden="true" />
-                  <span>Carrinho</span>
-                  <strong className="cart-pill" id="carrinho">
-                    R$ {subtotalCents === 0 ? "0,00" : subtotalLabel.replace("R$", "").trim()} <small>{cartCount}</small>
-                  </strong>
-                </button>
                 <a href="#produtos" className="nav-tile nav-tile--cta">
                   <Send aria-hidden="true" />
                   <span>Ver materiais</span>
                 </a>
+                <button type="button" className="nav-tile nav-tile--button" onClick={openCategoryFilters}>
+                  <LayoutGrid aria-hidden="true" />
+                  <span>Categorias</span>
+                </button>
                 <a href="#sobre" className="nav-tile">
                   <UserRound aria-hidden="true" />
                   <span>Sobre</span>
@@ -360,6 +353,13 @@ export function ProjetoArteStorefront({
                   <Mail aria-hidden="true" />
                   <span>Contato</span>
                 </a>
+                <button type="button" className="nav-tile nav-tile--button" onClick={openCart}>
+                  <ShoppingCart aria-hidden="true" />
+                  <span>Carrinho</span>
+                  <strong className="cart-pill" id="carrinho">
+                    R$ {subtotalCents === 0 ? "0,00" : subtotalLabel.replace("R$", "").trim()} <small>{cartCount}</small>
+                  </strong>
+                </button>
               </div>
             </nav>
 
