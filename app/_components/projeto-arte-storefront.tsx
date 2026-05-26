@@ -302,33 +302,32 @@ export function ProjetoArteStorefront({
       <main>
         <section className="first-fold" id="inicio" aria-label="Artes que Ensinam">
           <header className="site-header">
-            <div className="topbar">
-              <div className="container topbar__inner">
-                <a href={`mailto:${email}`}>
-                  <Mail aria-hidden="true" />
-                  {email}
+            <div className="masthead">
+              <div className="container masthead__inner">
+                <div className="masthead__info">
+                  <a href={`mailto:${email}`}>
+                    <Mail aria-hidden="true" />
+                    {email}
+                  </a>
+                  <a href="#contato">
+                    <MessageCircle aria-hidden="true" />
+                    Suporte WhatsApp
+                  </a>
+                </div>
+
+                <a className="brand-mark" href="#inicio" aria-label="Artes que Ensinam">
+                  <span className="brand-mark__abc">ABC</span>
+                  <span className="brand-mark__script">Artes que Ensinam</span>
+                  <span className="brand-mark__byline">por Simone Pereira Lima</span>
                 </a>
-                <a href="#contato">
-                  <MessageCircle aria-hidden="true" />
-                  Suporte WhatsApp
-                </a>
-                <nav className="social-mini" aria-label="Redes sociais">
+
+                <nav className="social-mini masthead__social" aria-label="Redes sociais">
                   {socialLinks.map((social) => (
                     <a href={social.href} aria-label={social.label} key={social.label}>
                       <social.icon aria-hidden="true" />
                     </a>
                   ))}
                 </nav>
-              </div>
-            </div>
-
-            <div className="brand-row">
-              <div className="container brand-row__inner">
-                <a className="brand-mark" href="#inicio" aria-label="Artes que Ensinam">
-                  <span className="brand-mark__abc">ABC</span>
-                  <span className="brand-mark__script">Artes que Ensinam</span>
-                  <span className="brand-mark__byline">por Simone Pereira Lima</span>
-                </a>
               </div>
             </div>
 
@@ -377,15 +376,15 @@ export function ProjetoArteStorefront({
               className="hero-art__image"
             />
           </div>
-        </section>
 
-        <section className="intro-strip" aria-label="Destaques dos materiais">
-          <div className="container intro-strip__grid">
-            <Feature icon={ArrowDownToLine} title="Download imediato" />
-            <Feature icon={Printer} title="Pronto para imprimir" />
-            <Feature icon={FileText} title="Arquivos em PDF" />
-            <Feature icon={Heart} title="Feito por professora" />
-          </div>
+          <section className="intro-strip" aria-label="Destaques dos materiais">
+            <div className="container intro-strip__grid">
+              <Feature icon={ArrowDownToLine} title="Download imediato" />
+              <Feature icon={Printer} title="Pronto para imprimir" />
+              <Feature icon={FileText} title="Arquivos em PDF" />
+              <Feature icon={Heart} title="Feito por professora" />
+            </div>
+          </section>
         </section>
 
         {filtersOpen ? (
