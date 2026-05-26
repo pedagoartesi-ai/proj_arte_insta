@@ -548,11 +548,6 @@ export function ProjetoArteStorefront({
               </div>
 
               <div className="embedded-checkout-wrap">
-                {!stripePublishableKey ? (
-                  <p className="checkout-panel__warning">
-                    Defina <code>NEXT_PUBLIC_PROJ_ARTE_STRIPE_PUBLISHABLE_KEY</code> para renderizar o checkout embutido.
-                  </p>
-                ) : null}
                 {cartOpen ? <div ref={embeddedCheckoutRef} className="embedded-checkout" /> : <p className="checkout-panel__empty">Abra o carrinho para ver o checkout.</p>}
               </div>
             </aside>
