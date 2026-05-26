@@ -116,8 +116,6 @@ export function ProjetoArteStorefront({
     return counts;
   }, [products]);
 
-  const activeCategoryLabel = activeCategory === "all" ? "Todas as atividades" : categoryBySlug.get(activeCategory)?.name ?? "Categoria";
-
   const filteredProducts = useMemo(() => {
     if (activeCategory === "all") return products;
     return products.filter((product) => product.activityTypeSlug === activeCategory);
@@ -387,19 +385,6 @@ export function ProjetoArteStorefront({
             <Feature icon={Printer} title="Pronto para imprimir" />
             <Feature icon={FileText} title="Arquivos em PDF" />
             <Feature icon={Heart} title="Feito por professora" />
-          </div>
-        </section>
-
-        <section className="section section--light" id="categorias">
-          <div className="container">
-            <div className="section-heading">
-              <span className="eyebrow">Categorias</span>
-              <h2>Filtre por categoria</h2>
-              <p>Abra o painel de categorias quando quiser refinar a busca.</p>
-            </div>
-            <div className="filter-hint filter-hint--inline">
-              <strong>Filtro ativo:</strong> {activeCategoryLabel}. Clique em <strong>Categorias</strong> no menu para abrir o painel.
-            </div>
           </div>
         </section>
 
