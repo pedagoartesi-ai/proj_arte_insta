@@ -49,11 +49,12 @@ type Props = {
   initialCategories: ActivityType[];
   initialProducts: Product[];
   publicUrl: string;
+  whatsappUrl: string;
   stripePublishableKey: string;
 };
 
-const socialLinks = [
-  { label: "WhatsApp", href: "#contato", icon: MessageCircle },
+const socialLinks = (whatsappUrl: string) => [
+  { label: "WhatsApp", href: whatsappUrl || "#contato", icon: MessageCircle },
   { label: "Instagram", href: "#contato", icon: Camera },
   { label: "Facebook", href: "#contato", icon: Heart },
 ];
@@ -81,6 +82,7 @@ export function ProjetoArteStorefront({
   initialCategories,
   initialProducts,
   publicUrl,
+  whatsappUrl,
   stripePublishableKey,
 }: Props) {
   const [categories] = useState(initialCategories);
@@ -94,6 +96,9 @@ export function ProjetoArteStorefront({
   const [verificationToken, setVerificationToken] = useState("");
   const [verificationStatus, setVerificationStatus] = useState<"idle" | "sending" | "code-sent" | "verifying" | "verified" | "error">("idle");
   const [verificationMessage, setVerificationMessage] = useState("");
+  const [contactEmailOpen, setContactEmailOpen] = useState(false);
+  const [contactEmailSubject, setContactEmailSubject] = useState("Contato pelo site Artes que Ensinam");
+  const [contactEmailBody, setContactEmailBody] = useState("");
   const [checkoutStatus, setCheckoutStatus] = useState<"idle" | "creating" | "ready" | "error">("idle");
   const [checkoutMessage, setCheckoutMessage] = useState("");
   const [clientSecret, setClientSecret] = useState("");
@@ -158,6 +163,14 @@ export function ProjetoArteStorefront({
       embeddedCheckoutInstance.current = null;
     };
   }, [clientSecret, stripePublishableKey, stripeReady]);
+
+  const contactMailto = useMemo(() => {
+    const to = email;
+    const params = new URLSearchParams();
+    if (contactEmailSubject.trim()) params.set("subject", contactEmailSubject.trim());
+    if (contactEmailBody.trim()) params.set("body", contactEmailBody.trim());
+    return `mailto:${to}${params.toString() ? `?${params.toString()}` : ""}`;
+  }, [contactEmailBody, contactEmailSubject]);
 
   const cartItems = useMemo(() => {
     return Object.entries(cart)
@@ -311,7 +324,7 @@ export function ProjetoArteStorefront({
                 </a>
 
                 <nav className="social-mini masthead__social" aria-label="Redes sociais">
-                  {socialLinks.map((social) => (
+                  {socialLinks(whatsappUrl).map((social) => (
                     <a href={social.href} aria-label={social.label} key={social.label}>
                       <social.icon aria-hidden="true" />
                     </a>
@@ -594,19 +607,44 @@ export function ProjetoArteStorefront({
               <span className="eyebrow">Contato</span>
               <h2>Fale com a Simone</h2>
               <p>
-                O email e os canais sociais ficam prontos para uso real assim que a configuração final estiver publicada.
+                WhatsApp abre no canal do projeto e o email vai direto para a Simone.
               </p>
             </div>
             <div className="contact-actions">
-              <a className="contact-card" href={`mailto:${email}`}>
+              <button type="button" className="contact-card" onClick={() => setContactEmailOpen((value) => !value)}>
                 <Mail aria-hidden="true" />
-                <span>{email}</span>
-              </a>
-              <a className="contact-card" href="#" aria-label="Contato pelo WhatsApp">
+                <span>Email para a Simone</span>
+              </button>
+              <a className="contact-card" href={whatsappUrl || "#contato"} target={whatsappUrl ? "_blank" : undefined} rel={whatsappUrl ? "noreferrer" : undefined} aria-label="Contato pelo WhatsApp">
                 <MessageCircle aria-hidden="true" />
                 <span>Suporte pelo WhatsApp</span>
               </a>
             </div>
+            {contactEmailOpen ? (
+              <div className="contact-mailbox">
+                <label>
+                  Assunto
+                  <input
+                    type="text"
+                    value={contactEmailSubject}
+                    onChange={(e) => setContactEmailSubject(e.target.value)}
+                    placeholder="Assunto do email"
+                  />
+                </label>
+                <label>
+                  Mensagem
+                  <textarea
+                    value={contactEmailBody}
+                    onChange={(e) => setContactEmailBody(e.target.value)}
+                    placeholder="Escreva sua mensagem para pedagoartesi@gmail.com"
+                    rows={5}
+                  />
+                </label>
+                <a className="checkout-button contact-mailbox__send" href={contactMailto}>
+                  <Send aria-hidden="true" /> Enviar email
+                </a>
+              </div>
+            ) : null}
           </div>
         </section>
       </main>
@@ -627,7 +665,7 @@ export function ProjetoArteStorefront({
           </div>
           <div>
             <h2>Sociais</h2>
-            {socialLinks.map((social) => (
+            {socialLinks(whatsappUrl).map((social) => (
               <a href={social.href} key={social.label}>
                 <social.icon aria-hidden="true" />
                 {social.label}

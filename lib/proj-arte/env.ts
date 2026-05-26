@@ -4,6 +4,15 @@ export function getPublicUrl() {
   return process.env.PROJ_ARTE_PUBLIC_URL ?? fallbackPublicUrl;
 }
 
+export function getContactConfig() {
+  const whatsappRaw = process.env.WHATSAPP ?? process.env.PROJ_ARTE_WHATSAPP ?? "";
+  const whatsappDigits = whatsappRaw.replace(/\D/g, "");
+
+  return {
+    whatsappUrl: whatsappDigits ? `https://wa.me/${whatsappDigits}` : "",
+  };
+}
+
 export function getSupabaseConfig() {
   const url = process.env.SUPABASE_PROJ_ARTE_URL ?? "";
   const serviceRoleKey = process.env.SUPABASE_PROJ_ARTE_SERVICE_ROLE_KEY ?? "";

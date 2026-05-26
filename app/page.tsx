@@ -1,6 +1,6 @@
 import { ProjetoArteStorefront } from "./_components/projeto-arte-storefront";
 import { listCategories, listProducts } from "@/lib/proj-arte/store";
-import { getPublicUrl, getStripeConfig } from "@/lib/proj-arte/env";
+import { getContactConfig, getPublicUrl, getStripeConfig } from "@/lib/proj-arte/env";
 
 export default async function HomePage() {
   const [initialCategories, initialProducts] = await Promise.all([
@@ -13,6 +13,7 @@ export default async function HomePage() {
       initialCategories={initialCategories}
       initialProducts={initialProducts.data}
       publicUrl={getPublicUrl()}
+      whatsappUrl={getContactConfig().whatsappUrl}
       stripePublishableKey={getStripeConfig().publishableKey}
     />
   );
