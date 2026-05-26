@@ -220,6 +220,13 @@ button:focus-visible {
   text-transform: uppercase;
 }
 
+.nav-tile--button {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+
 .nav-tile:last-child {
   border-right: 1px solid rgba(255, 255, 255, 0.44);
 }
@@ -367,6 +374,22 @@ p {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 18px;
+}
+
+.category-grid--compact {
+  margin-top: 16px;
+}
+
+.filter-hint {
+  padding: 16px 18px;
+  border: 1px dashed #f2c4d8;
+  border-radius: 18px;
+  background: #fff8fb;
+  color: #6d5c68;
+}
+
+.section--filters-open .section-heading h2 {
+  margin-bottom: 6px;
 }
 
 .filter-strip {
@@ -975,21 +998,47 @@ p {
 
 .products-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.6fr) minmax(320px, 0.9fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: 28px;
   align-items: start;
 }
 
 .checkout-panel {
-  position: sticky;
-  top: 18px;
-  display: grid;
+  display: none;
   gap: 18px;
   padding: 22px;
   border: 1px solid #eadde5;
   border-radius: var(--radius);
   background: var(--paper);
   box-shadow: 0 18px 38px rgba(63, 53, 64, 0.08);
+}
+
+.checkout-panel--open {
+  display: grid;
+  position: fixed;
+  z-index: 30;
+  top: 18px;
+  right: 18px;
+  width: min(420px, calc(100vw - 36px));
+  max-height: calc(100vh - 36px);
+  overflow: auto;
+}
+
+.checkout-panel__head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.panel-close {
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid #f0ddea;
+  border-radius: 999px;
+  background: var(--paper);
+  color: #8a5b74;
+  font-weight: 800;
 }
 
 .checkout-panel__head p,
@@ -1103,6 +1152,10 @@ p {
   min-height: 420px;
 }
 
+.checkout-panel--open .embedded-checkout {
+  min-height: 360px;
+}
+
 .checkout-panel__warning {
   padding: 12px 14px;
   border-radius: 14px;
@@ -1140,7 +1193,11 @@ p {
     grid-template-columns: 1fr;
   }
 
-  .checkout-panel {
-    position: static;
+  .checkout-panel--open {
+    inset: auto 16px 16px 16px;
+    top: auto;
+    right: auto;
+    width: auto;
+    max-height: 70vh;
   }
 }

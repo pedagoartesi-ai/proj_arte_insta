@@ -52,14 +52,6 @@ type Props = {
   stripePublishableKey: string;
 };
 
-const navItems = [
-  { label: "Início", href: "#inicio", icon: Home },
-  { label: "Categorias", href: "#categorias", icon: LayoutGrid },
-  { label: "Carrinho", href: "#carrinho", icon: ShoppingCart },
-  { label: "Sobre", href: "#sobre", icon: UserRound },
-  { label: "Contato", href: "#contato", icon: Mail },
-];
-
 const socialLinks = [
   { label: "WhatsApp", href: "#contato", icon: MessageCircle },
   { label: "Instagram", href: "#contato", icon: Camera },
@@ -94,6 +86,8 @@ export function ProjetoArteStorefront({
   const [categories] = useState(initialCategories);
   const [products] = useState(initialProducts);
   const [activeCategory, setActiveCategory] = useState("all");
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
   const [cart, setCart] = useState<Record<string, number>>({});
   const [emailInput, setEmailInput] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
@@ -105,7 +99,7 @@ export function ProjetoArteStorefront({
   const [clientSecret, setClientSecret] = useState("");
   const [stripeReady, setStripeReady] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 4;
+  const itemsPerPage = 8;
   const embeddedCheckoutRef = useRef<HTMLDivElement | null>(null);
   const embeddedCheckoutInstance = useRef<{ unmount?: () => void } | null>(null);
 
@@ -169,6 +163,7 @@ export function ProjetoArteStorefront({
 
   const subtotalCents = cartItems.reduce((sum, item) => sum + item.product.priceCents * item.quantity, 0);
   const subtotalLabel = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(subtotalCents / 100);
+  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   function addToCart(productId: string) {
     setCart((current) => ({ ...current, [productId]: (current[productId] ?? 0) + 1 }));
@@ -281,6 +276,16 @@ export function ProjetoArteStorefront({
     setClientSecret(data.clientSecret);
     setCheckoutStatus("ready");
     setCheckoutMessage("Checkout embutido pronto.");
+    setCartOpen(true);
+  }
+
+  function openCategoryFilters() {
+    setFiltersOpen((current) => !current);
+  }
+
+  function openCart() {
+    setCartOpen(true);
+    setFiltersOpen(false);
   }
 
   return (
@@ -325,17 +330,29 @@ export function ProjetoArteStorefront({
 
             <nav className="main-nav" aria-label="Navegação principal">
               <div className="container main-nav__inner">
-                {navItems.map((item) => (
-                  <a href={item.href} key={item.label} className="nav-tile">
-                    <item.icon aria-hidden="true" />
-                    <span>{item.label}</span>
-                    {item.label === "Carrinho" ? (
-                      <strong className="cart-pill" id="carrinho">
-                        R$ {subtotalCents === 0 ? "0,00" : subtotalLabel.replace("R$", "").trim()} <small>{cartItems.reduce((sum, item) => sum + item.quantity, 0)}</small>
-                      </strong>
-                    ) : null}
-                  </a>
-                ))}
+                <a href="#inicio" className="nav-tile">
+                  <Home aria-hidden="true" />
+                  <span>Início</span>
+                </a>
+                <button type="button" className="nav-tile nav-tile--button" onClick={openCategoryFilters}>
+                  <LayoutGrid aria-hidden="true" />
+                  <span>Categorias</span>
+                </button>
+                <button type="button" className="nav-tile nav-tile--button" onClick={openCart}>
+                  <ShoppingCart aria-hidden="true" />
+                  <span>Carrinho</span>
+                  <strong className="cart-pill" id="carrinho">
+                    R$ {subtotalCents === 0 ? "0,00" : subtotalLabel.replace("R$", "").trim()} <small>{cartCount}</small>
+                  </strong>
+                </button>
+                <a href="#sobre" className="nav-tile">
+                  <UserRound aria-hidden="true" />
+                  <span>Sobre</span>
+                </a>
+                <a href="#contato" className="nav-tile">
+                  <Mail aria-hidden="true" />
+                  <span>Contato</span>
+                </a>
               </div>
             </nav>
 
@@ -363,63 +380,69 @@ export function ProjetoArteStorefront({
           </div>
         </section>
 
-        <section className="section section--light" id="categorias">
+        <section className={`section section--light ${filtersOpen ? "section--filters-open" : ""}`} id="categorias">
           <div className="container">
             <div className="section-heading">
               <span className="eyebrow">Categorias</span>
-              <h2>Filtre por categoria e encontre rápido o que precisa</h2>
-              <p>
-                Cada filtro afina a vitrine para mostrar só os materiais daquela área, igual à referência enviada por Diego.
-              </p>
+              <h2>Filtre por categoria</h2>
+              <p>Abra os filtros e refine a vitrine sem poluir a página inicial.</p>
             </div>
 
-            <div className="filter-strip" role="tablist" aria-label="Filtrar atividades">
-              <button
-                type="button"
-                className={`filter-chip ${activeCategory === "all" ? "filter-chip--active" : ""}`}
-                onClick={() => {
-                  setActiveCategory("all");
-                  setCurrentPage(1);
-                }}
-              >
-                Todas as atividades
-              </button>
-              {categories.map((category) => (
-                <button
-                  type="button"
-                  className={`filter-chip ${activeCategory === category.slug ? "filter-chip--active" : ""}`}
-                  onClick={() => {
-                    setActiveCategory(category.slug);
-                    setCurrentPage(1);
-                  }}
-                  key={category.slug}
-                >
-                  {category.name}
-                </button>
-              ))}
-            </div>
-
-            <div className="category-grid">
-              {categories.map((category) => {
-                const Icon = categoryIcons[category.slug] ?? BadgeCheck;
-                const active = activeCategory === category.slug;
-                return (
+            {filtersOpen ? (
+              <>
+                <div className="filter-strip" role="tablist" aria-label="Filtrar atividades">
                   <button
                     type="button"
-                    className={`category-item ${active ? "category-item--active" : ""}`}
-                    key={category.slug}
+                    className={`filter-chip ${activeCategory === "all" ? "filter-chip--active" : ""}`}
                     onClick={() => {
-                      setActiveCategory(category.slug);
+                      setActiveCategory("all");
                       setCurrentPage(1);
                     }}
                   >
-                    <Icon aria-hidden="true" />
-                    <h3>{category.name}</h3>
-                    <p>{category.description}</p>
+                    Todas as atividades
                   </button>
-                );
-              })}
-            </div>
+                  {categories.map((category) => (
+                    <button
+                      type="button"
+                      className={`filter-chip ${activeCategory === category.slug ? "filter-chip--active" : ""}`}
+                      onClick={() => {
+                        setActiveCategory(category.slug);
+                        setCurrentPage(1);
+                        setFiltersOpen(false);
+                      }}
+                      key={category.slug}
+                    >
+                      {category.name}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="category-grid category-grid--compact">
+                  {categories.map((category) => {
+                    const Icon = categoryIcons[category.slug] ?? BadgeCheck;
+                    const active = activeCategory === category.slug;
+                    return (
+                      <button
+                        type="button"
+                        className={`category-item ${active ? "category-item--active" : ""}`}
+                        key={category.slug}
+                        onClick={() => {
+                          setActiveCategory(category.slug);
+                          setCurrentPage(1);
+                          setFiltersOpen(false);
+                        }}
+                      >
+                        <Icon aria-hidden="true" />
+                        <h3>{category.name}</h3>
+                        <p>{category.description}</p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            ) : (
+              <div className="filter-hint">Clique em <strong>Categorias</strong> no menu para abrir os filtros.</div>
+            )}
           </div>
         </section>
 
@@ -429,7 +452,7 @@ export function ProjetoArteStorefront({
               <div className="section-heading">
                 <span className="eyebrow">Vitrine</span>
                 <h2>Produtos prontos para venda</h2>
-                <p>Adicione ao carrinho, valide seu email e finalize sem sair da página.</p>
+                <p>Clique no produto para abrir a opção de adicionar ao carrinho. O checkout só abre no carrinho.</p>
               </div>
 
               <div className="products-grid">
@@ -438,7 +461,10 @@ export function ProjetoArteStorefront({
                     key={product.id}
                     product={product}
                     categoryLabel={categoryBySlug.get(product.activityTypeSlug)?.name ?? product.activityTypeSlug}
-                    onAdd={() => addToCart(product.id)}
+                    onAdd={() => {
+                      addToCart(product.id);
+                      setCartOpen(true);
+                    }}
                   />
                 ))}
               </div>
@@ -450,9 +476,14 @@ export function ProjetoArteStorefront({
               />
             </div>
 
-            <aside className="checkout-panel" id="checkout-panel">
+            <aside className={`checkout-panel ${cartOpen ? "checkout-panel--open" : ""}`} id="checkout-panel">
               <div className="checkout-panel__head">
-                <span className="eyebrow">Carrinho</span>
+                <div className="checkout-panel__head-row">
+                  <span className="eyebrow">Carrinho</span>
+                  <button type="button" className="panel-close" onClick={() => setCartOpen(false)}>
+                    Fechar
+                  </button>
+                </div>
                 <h3>Seu pedido</h3>
                 <p>{cartItems.length ? `${cartItems.length} item(ns) selecionado(s)` : "Adicione um produto para iniciar."}</p>
               </div>
@@ -523,7 +554,7 @@ export function ProjetoArteStorefront({
                     Defina <code>NEXT_PUBLIC_PROJ_ARTE_STRIPE_PUBLISHABLE_KEY</code> para renderizar o checkout embutido.
                   </p>
                 ) : null}
-                <div ref={embeddedCheckoutRef} className="embedded-checkout" />
+                {cartOpen ? <div ref={embeddedCheckoutRef} className="embedded-checkout" /> : <p className="checkout-panel__empty">Abra o carrinho para ver o checkout.</p>}
               </div>
             </aside>
           </div>
