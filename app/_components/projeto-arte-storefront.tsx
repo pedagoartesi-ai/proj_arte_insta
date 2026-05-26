@@ -304,17 +304,6 @@ export function ProjetoArteStorefront({
           <header className="site-header">
             <div className="masthead">
               <div className="container masthead__inner">
-                <div className="masthead__info">
-                  <a href={`mailto:${email}`}>
-                    <Mail aria-hidden="true" />
-                    {email}
-                  </a>
-                  <a href="#contato">
-                    <MessageCircle aria-hidden="true" />
-                    Suporte WhatsApp
-                  </a>
-                </div>
-
                 <a className="brand-mark" href="#inicio" aria-label="Artes que Ensinam">
                   <span className="brand-mark__abc">ABC</span>
                   <span className="brand-mark__script">Artes que Ensinam</span>

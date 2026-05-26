@@ -98,30 +98,6 @@ button:focus-visible {
   padding-bottom: 0;
 }
 
-.masthead__info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.66rem;
-  color: #4f424d;
-  padding-left: 4px;
-  align-self: flex-start;
-  margin-top: 2px;
-}
-
-.masthead__info a {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.masthead__info svg {
-  width: 15px;
-  height: 15px;
-}
-
 .social-mini {
   display: flex;
   align-items: center;
@@ -896,11 +872,6 @@ p {
     gap: 12px;
   }
 
-  .masthead__info {
-    font-size: 0.64rem;
-    gap: 8px;
-  }
-
   .main-nav__inner {
     width: max-content;
     min-width: 100%;
@@ -937,11 +908,6 @@ p {
     min-height: 62px;
     gap: 8px;
     padding: 6px 0 4px;
-  }
-
-  .masthead__info {
-    font-size: 0.58rem;
-    gap: 6px;
   }
 
   .social-mini a {
@@ -1034,10 +1000,6 @@ p {
 }
 
 @media (max-width: 430px) {
-  .masthead__info a {
-    font-size: 0.76rem;
-  }
-
   .hero-art {
     aspect-ratio: 3 / 2;
   }
