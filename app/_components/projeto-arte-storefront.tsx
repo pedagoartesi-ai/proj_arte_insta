@@ -363,7 +363,6 @@ export function ProjetoArteStorefront({
               </div>
             </nav>
 
-            <div className="download-ribbon">Materiais em PDF prontos para imprimir</div>
           </header>
 
           <div className="hero-art" aria-label="Apresentação visual da professora Simone">

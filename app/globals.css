@@ -255,17 +255,6 @@ button:focus-visible {
   font-size: 0.68rem;
 }
 
-.download-ribbon {
-  min-height: 32px;
-  display: grid;
-  place-items: center;
-  background: #f72592;
-  color: var(--paper);
-  font-weight: 1000;
-  text-align: center;
-  text-shadow: 0 2px 8px rgba(56, 31, 45, 0.28);
-}
-
 .hero-art {
   position: relative;
   width: 100vw;
@@ -1007,11 +996,6 @@ p {
 
   .cart-pill {
     display: none;
-  }
-
-  .download-ribbon {
-    padding: 7px 12px;
-    font-size: 0.92rem;
   }
 
   .hero-art {
