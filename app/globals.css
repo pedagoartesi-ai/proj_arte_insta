@@ -119,10 +119,6 @@ button:focus-visible {
   text-transform: uppercase;
 }
 
-.nav-tile--cta {
-  background: rgba(255, 255, 255, 0.14);
-}
-
 .main-nav {
   background: var(--pink-500);
   color: var(--paper);
