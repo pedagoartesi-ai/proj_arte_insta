@@ -104,6 +104,8 @@ export function ProjetoArteStorefront({
   const [clientSecret, setClientSecret] = useState("");
   const [stripeReady, setStripeReady] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const itemsPerPage = 8;
   const embeddedCheckoutRef = useRef<HTMLDivElement | null>(null);
   const embeddedCheckoutInstance = useRef<{ unmount?: () => void } | null>(null);
@@ -464,7 +466,7 @@ export function ProjetoArteStorefront({
               <div className="section-heading">
                 <span className="eyebrow">Vitrine</span>
                 <h2>Produtos prontos para venda</h2>
-                <p>Clique no produto para abrir a opção de adicionar ao carrinho. O checkout só abre no carrinho.</p>
+                <p>Clique no produto para abrir o informativo com imagens. O checkout só abre no carrinho.</p>
               </div>
 
               <div className="products-grid">
@@ -473,6 +475,10 @@ export function ProjetoArteStorefront({
                     key={product.id}
                     product={product}
                     categoryLabel={categoryBySlug.get(product.activityTypeSlug)?.name ?? product.activityTypeSlug}
+                    onOpen={() => {
+                      setSelectedProduct(product);
+                      setSelectedImageIndex(0);
+                    }}
                     onAdd={() => {
                       addToCart(product.id);
                       setCartOpen(true);
@@ -566,6 +572,21 @@ export function ProjetoArteStorefront({
             </aside>
           </div>
         </section>
+
+        {selectedProduct ? (
+          <ProductDetailModal
+            product={selectedProduct}
+            categoryLabel={categoryBySlug.get(selectedProduct.activityTypeSlug)?.name ?? selectedProduct.activityTypeSlug}
+            selectedImageIndex={selectedImageIndex}
+            onSelectImage={setSelectedImageIndex}
+            onClose={() => setSelectedProduct(null)}
+            onAdd={() => {
+              addToCart(selectedProduct.id);
+              setCartOpen(true);
+              setSelectedProduct(null);
+            }}
+          />
+        ) : null}
 
         <section className="section about-section" id="sobre">
           <div className="container about-layout">
@@ -713,39 +734,111 @@ function Feature({ icon: Icon, title }: { icon: LucideIcon; title: string }) {
 function ProductCard({
   product,
   categoryLabel,
+  onOpen,
   onAdd,
 }: {
   product: Product;
   categoryLabel: string;
+  onOpen: () => void;
   onAdd: () => void;
 }) {
-  const slides = product.galleryUrls.length ? product.galleryUrls : [product.title, categoryLabel, product.priceLabel];
+  const slides = [product.coverImageUrl, ...product.galleryUrls].filter(Boolean) as string[];
   const accent = product.featured ? "rose" : product.activityTypeSlug.includes("datas") ? "sun" : product.activityTypeSlug.includes("alfabetizacao") ? "sky" : "mint";
 
   return (
     <article className={`product-card product-card--${accent}`}>
-      <div className="product-preview" aria-label={`Pré-visualização de ${product.title}`}>
+      <button
+        type="button"
+        className="product-preview"
+        aria-label={`Abrir detalhes de ${product.title}`}
+        onClick={onOpen}
+        style={{ border: 0, background: "transparent", padding: 0, width: "100%", textAlign: "left", cursor: "pointer" }}
+      >
         <div className="product-preview__rail">
-          {slides.map((slide, index) => (
+          {(slides.length ? slides : [""]).map((slide, index) => (
             <div className="product-preview__sheet" key={`${product.title}-${index}`}>
-              <Sparkles aria-hidden="true" />
-              <span>{categoryLabel}</span>
-              <strong>{slide ? `Slide ${index + 1}` : product.title}</strong>
-              <small>Arraste para ver mais</small>
+              {slide ? (
+                <img src={slide} alt={`${product.title} - imagem ${index + 1}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              ) : (
+                <>
+                  <Sparkles aria-hidden="true" />
+                  <span>{categoryLabel}</span>
+                  <strong>{product.title}</strong>
+                  <small>Clique para ver detalhes</small>
+                </>
+              )}
             </div>
           ))}
         </div>
-      </div>
+      </button>
       <div className="product-card__body">
         <span className="product-category">{categoryLabel}</span>
         <h3>{product.title}</h3>
         <p>{product.priceLabel}</p>
+        <button type="button" className="buy-button" onClick={onOpen} aria-label={`Ver informativo de ${product.title}`}>
+          Ver informativo
+        </button>
         <button type="button" className="buy-button" onClick={onAdd} aria-label={`Adicionar ${product.title}`}>
           <Plus aria-hidden="true" /> Adicionar
         </button>
       </div>
       {product.featured ? <span className="featured-badge">Destaque</span> : null}
     </article>
+  );
+}
+
+function ProductDetailModal({
+  product,
+  categoryLabel,
+  selectedImageIndex,
+  onSelectImage,
+  onClose,
+  onAdd,
+}: {
+  product: Product;
+  categoryLabel: string;
+  selectedImageIndex: number;
+  onSelectImage: (index: number) => void;
+  onClose: () => void;
+  onAdd: () => void;
+}) {
+  const images = [product.coverImageUrl, ...product.galleryUrls].filter(Boolean) as string[];
+  const currentImage = images[selectedImageIndex] ?? images[0] ?? "";
+
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 80, display: "grid", placeItems: "center", padding: 16 }}>
+      <article style={{ width: "min(1100px, 100%)", maxHeight: "90vh", overflow: "auto", background: "white", borderRadius: 16, padding: 16, display: "grid", gap: 16 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <strong>{product.title}</strong>
+          <button type="button" onClick={onClose}>Fechar</button>
+        </div>
+
+        <div style={{ display: "grid", gap: 16, gridTemplateColumns: "1.1fr 1fr" }}>
+          <div>
+            {currentImage ? <img src={currentImage} alt={product.title} style={{ width: "100%", borderRadius: 12 }} /> : null}
+            {images.length > 1 ? (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(5, minmax(0,1fr))", gap: 8, marginTop: 10 }}>
+                {images.map((image, index) => (
+                  <button key={`${product.id}-thumb-${index}`} type="button" onClick={() => onSelectImage(index)} style={{ border: selectedImageIndex === index ? "2px solid #ec4899" : "1px solid #ddd", borderRadius: 8, padding: 0, overflow: "hidden", background: "white" }}>
+                    <img src={image} alt={`${product.title} miniatura ${index + 1}`} style={{ width: "100%", aspectRatio: "1 / 1", objectFit: "cover" }} />
+                  </button>
+                ))}
+              </div>
+            ) : null}
+          </div>
+
+          <div style={{ display: "grid", gap: 12, alignContent: "start" }}>
+            <span className="product-category">{categoryLabel}</span>
+            <h3 style={{ margin: 0 }}>{product.title}</h3>
+            <p style={{ whiteSpace: "pre-wrap", margin: 0 }}>{product.description || "Descrição do material será exibida aqui."}</p>
+            <strong style={{ fontSize: 24 }}>{product.priceLabel}</strong>
+            <button type="button" className="buy-button" onClick={onAdd}>
+              <Plus aria-hidden="true" /> Adicionar ao carrinho
+            </button>
+          </div>
+        </div>
+      </article>
+    </div>
   );
 }
 

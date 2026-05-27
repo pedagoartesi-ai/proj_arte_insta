@@ -51,6 +51,9 @@ export default function AdminPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [form, setForm] = useState(emptyForm);
+  const [uploadingPdf, setUploadingPdf] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const [uploadingGallery, setUploadingGallery] = useState(false);
 
   const isAuthenticated = me.authenticated;
 
@@ -147,6 +150,32 @@ export default function AdminPage() {
     await refreshCatalog();
   }
 
+  async function uploadAsset(file: File, folder: string) {
+    const signRes = await fetch("/api/admin/uploads/sign", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fileName: file.name, contentType: file.type || "application/octet-stream", folder }),
+    });
+
+    const signBody = await signRes.json().catch(() => ({}));
+    if (!signRes.ok || !signBody?.data?.signedUrl || !signBody?.data?.path || !signBody?.data?.bucket) {
+      throw new Error(signBody?.error ?? "sign_failed");
+    }
+
+    const uploadRes = await fetch(signBody.data.signedUrl, {
+      method: "PUT",
+      headers: { "Content-Type": file.type || "application/octet-stream" },
+      body: file,
+    });
+
+    if (!uploadRes.ok) {
+      throw new Error("upload_failed");
+    }
+
+    const { origin } = new URL(signBody.data.signedUrl);
+    return `${origin}/storage/v1/object/public/${signBody.data.bucket}/${signBody.data.path}`;
+  }
+
   return (
     <main style={{ padding: 24, maxWidth: 1200, margin: "0 auto", fontFamily: "system-ui, sans-serif" }}>
       <h1>Admin — Artes que Ensinam</h1>
@@ -190,16 +219,94 @@ export default function AdminPage() {
               <input type="number" placeholder="Preço em centavos" value={form.priceCents} onChange={(e) => setForm({ ...form, priceCents: Number(e.target.value) })} />
               <input placeholder="Preço label (ex: R$ 10,00)" value={form.priceLabel} onChange={(e) => setForm({ ...form, priceLabel: e.target.value })} />
               <textarea placeholder="Descrição" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
-              <input placeholder="URL do PDF" value={form.pdfUrl} onChange={(e) => setForm({ ...form, pdfUrl: e.target.value })} />
-              <input placeholder="URL da capa" value={form.coverImageUrl} onChange={(e) => setForm({ ...form, coverImageUrl: e.target.value })} />
-              <textarea placeholder="URLs da galeria separadas por vírgula ou nova linha" value={form.galleryUrls} onChange={(e) => setForm({ ...form, galleryUrls: e.target.value })} />
+              <div style={{ display: "grid", gap: 8 }}>
+                <label>PDF do produto (upload)</label>
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setUploadingPdf(true);
+                    setMessage("");
+                    try {
+                      const url = await uploadAsset(file, "products/pdfs");
+                      setForm((prev) => ({ ...prev, pdfUrl: url }));
+                      setMessage("PDF enviado com sucesso.");
+                    } catch (error) {
+                      setMessage(`Falha no upload do PDF: ${String(error)}`);
+                    } finally {
+                      setUploadingPdf(false);
+                      e.currentTarget.value = "";
+                    }
+                  }}
+                />
+                <input placeholder="URL do PDF (preenchido automaticamente)" value={form.pdfUrl} onChange={(e) => setForm({ ...form, pdfUrl: e.target.value })} />
+              </div>
+
+              <div style={{ display: "grid", gap: 8 }}>
+                <label>Imagem de capa (upload)</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setUploadingCover(true);
+                    setMessage("");
+                    try {
+                      const url = await uploadAsset(file, "products/covers");
+                      setForm((prev) => ({ ...prev, coverImageUrl: url }));
+                      setMessage("Capa enviada com sucesso.");
+                    } catch (error) {
+                      setMessage(`Falha no upload da capa: ${String(error)}`);
+                    } finally {
+                      setUploadingCover(false);
+                      e.currentTarget.value = "";
+                    }
+                  }}
+                />
+                <input placeholder="URL da capa (preenchido automaticamente)" value={form.coverImageUrl} onChange={(e) => setForm({ ...form, coverImageUrl: e.target.value })} />
+              </div>
+
+              <div style={{ display: "grid", gap: 8 }}>
+                <label>Galeria de imagens (upload múltiplo)</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={async (e) => {
+                    const files = Array.from(e.target.files ?? []);
+                    if (!files.length) return;
+                    setUploadingGallery(true);
+                    setMessage("");
+                    try {
+                      const uploaded = await Promise.all(files.map((file) => uploadAsset(file, "products/gallery")));
+                      setForm((prev) => {
+                        const existing = prev.galleryUrls
+                          .split(/\n|,/) 
+                          .map((item) => item.trim())
+                          .filter(Boolean);
+                        return { ...prev, galleryUrls: [...existing, ...uploaded].join("\n") };
+                      });
+                      setMessage("Galeria enviada com sucesso.");
+                    } catch (error) {
+                      setMessage(`Falha no upload da galeria: ${String(error)}`);
+                    } finally {
+                      setUploadingGallery(false);
+                      e.currentTarget.value = "";
+                    }
+                  }}
+                />
+                <textarea placeholder="URLs da galeria (preenchido automaticamente; 1 por linha)" value={form.galleryUrls} onChange={(e) => setForm({ ...form, galleryUrls: e.target.value })} />
+              </div>
               <input placeholder="Checkout URL" value={form.checkoutUrl} onChange={(e) => setForm({ ...form, checkoutUrl: e.target.value })} />
               <input placeholder="Stripe Price ID" value={form.stripePriceId} onChange={(e) => setForm({ ...form, stripePriceId: e.target.value })} />
               <input placeholder="Stripe Product ID" value={form.stripeProductId} onChange={(e) => setForm({ ...form, stripeProductId: e.target.value })} />
               <input type="number" placeholder="Ordem" value={form.sortOrder} onChange={(e) => setForm({ ...form, sortOrder: Number(e.target.value) })} />
               <label><input type="checkbox" checked={form.featured} onChange={(e) => setForm({ ...form, featured: e.target.checked })} /> Destaque</label>
               <label><input type="checkbox" checked={form.active} onChange={(e) => setForm({ ...form, active: e.target.checked })} /> Ativo</label>
-              <button type="submit" disabled={loading}>Salvar produto</button>
+              <button type="submit" disabled={loading || uploadingPdf || uploadingCover || uploadingGallery}>Salvar produto</button>
             </form>
           </section>
 
