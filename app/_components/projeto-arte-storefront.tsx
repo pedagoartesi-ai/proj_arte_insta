@@ -8,7 +8,6 @@ import {
   BadgeCheck,
   BookOpen,
   CalendarHeart,
-  Camera,
   ChevronLeft,
   ChevronRight,
   Heart,
@@ -18,7 +17,6 @@ import {
   MessageCircle,
   Palette,
   Plus,
-  Printer,
   ShieldCheck,
   ShoppingCart,
   Sparkles,
@@ -26,10 +24,8 @@ import {
   UserRound,
   Send,
   Loader2,
-  ArrowDownToLine,
   FileText,
   GraduationCap,
-  type LucideIcon,
 } from "lucide-react";
 import type { ActivityType, Product } from "@/lib/proj-arte/types";
 
@@ -53,12 +49,6 @@ type Props = {
   whatsappUrl: string;
   stripePublishableKey: string;
 };
-
-const socialLinks = (whatsappUrl: string) => [
-  { label: "WhatsApp", href: whatsappUrl || "#contato", icon: MessageCircle },
-  { label: "Instagram", href: "#contato", icon: Camera },
-  { label: "Facebook", href: "#contato", icon: Heart },
-];
 
 const categoryIcons: Record<string, typeof BadgeCheck> = {
   "avaliacoes-sondagens-relatorios": BadgeCheck,
@@ -316,53 +306,43 @@ export function ProjetoArteStorefront({
       <main>
         <section className="first-fold" id="inicio" aria-label="Artes que Ensinam">
           <header className="site-header">
-            <div className="masthead">
-              <div className="container masthead__inner">
-                <a className="brand-mark" href="#inicio" aria-label="Artes que Ensinam">
+            <nav className="main-nav" aria-label="Navegação principal">
+              <div className="container main-nav__inner">
+                <a className="nav-brand" href="#inicio" aria-label="Artes que Ensinam">
                   <span className="brand-mark__abc">ABC</span>
                   <span className="brand-mark__script">Artes que Ensinam</span>
                   <span className="brand-mark__byline">por Simone Pereira Lima</span>
                 </a>
 
-                <nav className="social-mini masthead__social" aria-label="Redes sociais">
-                  {socialLinks(whatsappUrl).map((social) => (
-                    <a href={social.href} aria-label={social.label} key={social.label}>
-                      <social.icon aria-hidden="true" />
-                    </a>
-                  ))}
-                </nav>
-              </div>
-            </div>
-
-            <nav className="main-nav" aria-label="Navegação principal">
-              <div className="container main-nav__inner">
-                <a href="#inicio" className="nav-tile">
-                  <Home aria-hidden="true" />
-                  <span>Início</span>
-                </a>
-                <a href="#produtos" className="nav-tile nav-tile--cta">
-                  <Send aria-hidden="true" />
-                  <span>Ver materiais</span>
-                </a>
-                <button type="button" className="nav-tile nav-tile--button" onClick={openCategoryFilters}>
-                  <LayoutGrid aria-hidden="true" />
-                  <span>Categorias</span>
-                </button>
-                <a href="#sobre" className="nav-tile">
-                  <UserRound aria-hidden="true" />
-                  <span>Sobre</span>
-                </a>
-                <a href="#contato" className="nav-tile">
-                  <Mail aria-hidden="true" />
-                  <span>Contato</span>
-                </a>
-                <button type="button" className="nav-tile nav-tile--button" onClick={openCart}>
-                  <ShoppingCart aria-hidden="true" />
-                  <span>Carrinho</span>
-                  <strong className="cart-pill" id="carrinho">
-                    R$ {subtotalCents === 0 ? "0,00" : subtotalLabel.replace("R$", "").trim()} <small>{cartCount}</small>
-                  </strong>
-                </button>
+                <div className="main-nav__actions">
+                  <a href="#inicio" className="nav-tile">
+                    <Home aria-hidden="true" />
+                    <span>Início</span>
+                  </a>
+                  <a href="#produtos" className="nav-tile nav-tile--cta">
+                    <Send aria-hidden="true" />
+                    <span>Ver materiais</span>
+                  </a>
+                  <button type="button" className="nav-tile nav-tile--button" onClick={openCategoryFilters}>
+                    <LayoutGrid aria-hidden="true" />
+                    <span>Categorias</span>
+                  </button>
+                  <a href="#sobre" className="nav-tile">
+                    <UserRound aria-hidden="true" />
+                    <span>Sobre</span>
+                  </a>
+                  <a href="#contato" className="nav-tile">
+                    <Mail aria-hidden="true" />
+                    <span>Contato</span>
+                  </a>
+                  <button type="button" className="nav-tile nav-tile--button" onClick={openCart}>
+                    <ShoppingCart aria-hidden="true" />
+                    <span>Carrinho</span>
+                    <strong className="cart-pill" id="carrinho">
+                      R$ {subtotalCents === 0 ? "0,00" : subtotalLabel.replace("R$", "").trim()} <small>{cartCount}</small>
+                    </strong>
+                  </button>
+                </div>
               </div>
             </nav>
 
@@ -379,14 +359,6 @@ export function ProjetoArteStorefront({
             />
           </div>
 
-          <section className="intro-strip" aria-label="Destaques dos materiais">
-            <div className="container intro-strip__grid">
-              <Feature icon={ArrowDownToLine} title="Download imediato" />
-              <Feature icon={Printer} title="Pronto para imprimir" />
-              <Feature icon={FileText} title="Arquivos em PDF" />
-              <Feature icon={Heart} title="Feito por professora" />
-            </div>
-          </section>
         </section>
 
         {filtersOpen ? (
@@ -699,15 +671,6 @@ export function ProjetoArteStorefront({
         </div>
       </footer>
     </>
-  );
-}
-
-function Feature({ icon: Icon, title }: { icon: LucideIcon; title: string }) {
-  return (
-    <div className="feature">
-      <Icon aria-hidden="true" />
-      <span>{title}</span>
-    </div>
   );
 }
 

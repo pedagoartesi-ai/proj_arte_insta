@@ -82,56 +82,15 @@ button:focus-visible {
   box-shadow: 0 12px 28px rgba(238, 95, 162, 0.12);
 }
 
-.masthead {
-  background: var(--paper);
-  border-bottom: 1px solid rgba(243, 181, 210, 0.45);
-}
-
-.masthead__inner {
-  position: relative;
-  min-height: 72px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 18px;
-  padding-top: 4px;
-  padding-bottom: 0;
-}
-
-.social-mini {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.masthead__social {
-  margin-left: auto;
-  padding-right: 4px;
-  align-self: flex-start;
-  margin-top: 1px;
-}
-
-.social-mini a {
-  width: 24px;
-  height: 24px;
-  justify-content: center;
-  border-radius: 999px;
-  background: var(--pink-500);
-  color: var(--paper);
-  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.08);
-}
-
-.brand-mark {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -52%);
+.nav-brand {
+  min-height: 86px;
   display: grid;
+  align-content: center;
   justify-items: center;
-  line-height: 1;
   text-align: center;
-  padding: 4px 0;
-  width: max-content;
+  line-height: 1;
+  padding: 10px 18px;
+  border-right: 1px solid rgba(255, 255, 255, 0.44);
 }
 
 .brand-mark__abc {
@@ -153,7 +112,7 @@ button:focus-visible {
 
 .brand-mark__byline {
   margin-top: 4px;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.92);
   font-size: 0.55rem;
   font-weight: 900;
   letter-spacing: 0.18em;
@@ -170,8 +129,16 @@ button:focus-visible {
 }
 
 .main-nav__inner {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 0;
+}
+
+.main-nav__actions {
+  flex: 1;
   display: grid;
-  grid-template-columns: repeat(6, minmax(108px, 1fr));
+  grid-template-columns: repeat(6, minmax(98px, 1fr));
 }
 
 .nav-tile {
@@ -194,7 +161,7 @@ button:focus-visible {
   color: inherit;
 }
 
-.nav-tile:last-child {
+.main-nav__actions .nav-tile:last-child {
   border-right: 1px solid rgba(255, 255, 255, 0.44);
 }
 
@@ -244,35 +211,6 @@ button:focus-visible {
 .hero-art__image {
   object-fit: contain;
   object-position: center center;
-}
-
-.intro-strip {
-  background: linear-gradient(90deg, var(--pink-600), var(--pink-500));
-  color: var(--paper);
-}
-
-.intro-strip__grid {
-  min-height: 74px;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-}
-
-.feature {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  font-weight: 900;
-  text-align: center;
-}
-
-.feature svg {
-  width: 28px;
-  height: 28px;
-  padding: 5px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.24);
 }
 
 .section {
@@ -979,16 +917,19 @@ p {
 }
 
 @media (max-width: 980px) {
-  .masthead__inner {
-    min-height: 68px;
-    padding: 7px 0 5px;
-    gap: 12px;
+  .main-nav__inner {
+    flex-direction: column;
   }
 
-  .main-nav__inner {
-    width: max-content;
-    min-width: 100%;
-    grid-template-columns: repeat(6, 128px);
+  .nav-brand {
+    min-height: 64px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  }
+
+  .main-nav__actions {
+    width: 100%;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 
   .category-grid,
@@ -1017,19 +958,10 @@ p {
     width: min(calc(100% - 24px), var(--container));
   }
 
-  .masthead__inner {
-    min-height: 62px;
-    gap: 8px;
-    padding: 6px 0 4px;
-  }
-
-  .social-mini a {
-    width: 24px;
-    height: 24px;
-  }
-
-  .brand-mark {
+  .nav-brand {
+    min-height: 58px;
     max-width: 100%;
+    padding: 10px 8px;
   }
 
   .brand-mark__abc {
@@ -1038,7 +970,7 @@ p {
 
   .brand-mark__script {
     max-width: 100%;
-    font-size: clamp(1.55rem, 8vw, 2rem);
+    font-size: clamp(1.35rem, 7vw, 1.8rem);
     line-height: 0.9;
     white-space: normal;
   }
@@ -1070,7 +1002,10 @@ p {
     width: 100%;
     max-width: none;
     min-width: 0;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .main-nav__actions {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .cart-pill {
@@ -1082,16 +1017,6 @@ p {
     aspect-ratio: 3 / 2;
     height: auto;
     margin-left: calc(50% - 50vw);
-  }
-
-  .intro-strip__grid {
-    grid-template-columns: repeat(2, 1fr);
-    padding: 16px 0;
-  }
-
-  .feature {
-    justify-content: flex-start;
-    font-size: 0.9rem;
   }
 
   .category-grid,
