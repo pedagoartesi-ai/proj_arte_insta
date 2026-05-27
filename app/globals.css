@@ -90,7 +90,7 @@ button:focus-visible {
   text-align: left;
   line-height: 1;
   padding: 10px 8px 10px 2px;
-  border-right: 1px solid rgba(255, 255, 255, 0.44);
+  border-right: 0;
 }
 
 .brand-mark__abc {
@@ -168,6 +168,10 @@ button:focus-visible {
 
 .main-nav__actions .nav-tile:last-child {
   border-right: 1px solid rgba(255, 255, 255, 0.44);
+}
+
+.main-nav__actions .nav-tile:first-child {
+  border-left: 0;
 }
 
 .nav-tile svg {
