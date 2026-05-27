@@ -459,14 +459,20 @@ p {
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   padding-bottom: 4px;
+  scrollbar-color: var(--pink-500) rgba(255, 255, 255, 0.75);
 }
 
 .product-preview__rail::-webkit-scrollbar {
   height: 8px;
 }
 
+.product-preview__rail::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: 999px;
+}
+
 .product-preview__rail::-webkit-scrollbar-thumb {
-  background: rgba(63, 53, 64, 0.18);
+  background: var(--pink-500);
   border-radius: 999px;
 }
 
