@@ -68,9 +68,9 @@ button:focus-visible {
 }
 
 .first-fold {
-  min-height: auto;
+  min-height: 100svh;
   display: grid;
-  grid-template-rows: auto auto;
+  grid-template-rows: auto minmax(0, 1fr);
   background:
     radial-gradient(circle at 18% 20%, rgba(255, 226, 122, 0.3), transparent 28%),
     radial-gradient(circle at 88% 18%, rgba(159, 231, 245, 0.34), transparent 26%),
@@ -205,8 +205,7 @@ button:focus-visible {
   width: 100vw;
   margin-left: calc(50% - 50vw);
   margin-right: 0;
-  aspect-ratio: 3 / 2;
-  height: auto;
+  height: 100%;
   min-height: 0;
   background: var(--paper);
   overflow: hidden;
@@ -954,8 +953,9 @@ p {
 
 @media (max-width: 700px) {
   .first-fold {
-    min-height: auto;
-    display: block;
+    min-height: 100svh;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
   }
 
   .container {
@@ -1018,8 +1018,7 @@ p {
 
   .hero-art {
     min-height: 0;
-    aspect-ratio: 3 / 2;
-    height: auto;
+    height: 100%;
     margin-left: calc(50% - 50vw);
   }
 
@@ -1044,7 +1043,7 @@ p {
 
 @media (max-width: 430px) {
   .hero-art {
-    aspect-ratio: 3 / 2;
+    height: 100%;
   }
 }
 
