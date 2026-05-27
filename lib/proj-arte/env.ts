@@ -7,9 +7,10 @@ export function getPublicUrl() {
 export function getContactConfig() {
   const whatsappRaw = process.env.WHATSAPP ?? process.env.PROJ_ARTE_WHATSAPP ?? "";
   const whatsappDigits = whatsappRaw.replace(/\D/g, "");
+  const fallbackWhatsappDigits = "554892002451";
 
   return {
-    whatsappUrl: whatsappDigits ? `https://wa.me/${whatsappDigits}` : "",
+    whatsappUrl: `https://wa.me/${whatsappDigits || fallbackWhatsappDigits}`,
   };
 }
 
