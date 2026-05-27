@@ -68,9 +68,9 @@ button:focus-visible {
 }
 
 .first-fold {
-  min-height: 92svh;
+  min-height: auto;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-rows: auto auto;
   background:
     radial-gradient(circle at 18% 20%, rgba(255, 226, 122, 0.3), transparent 28%),
     radial-gradient(circle at 88% 18%, rgba(159, 231, 245, 0.34), transparent 26%),
@@ -202,10 +202,11 @@ button:focus-visible {
 
 .hero-art {
   position: relative;
-  width: min(90vw, 1400px);
-  margin-left: auto;
-  margin-right: auto;
-  height: min(46svh, 460px);
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: 0;
+  aspect-ratio: 3 / 2;
+  height: auto;
   min-height: 0;
   background: var(--paper);
   overflow: hidden;
