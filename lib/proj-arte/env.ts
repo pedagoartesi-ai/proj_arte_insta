@@ -1,45 +1,11 @@
-import { existsSync, readFileSync } from "fs";
-
 const fallbackPublicUrl = "https://abc-artes.ias-nexus-automacao.com.br";
-
-let credentialsCache: Record<string, string> | null = null;
-
-function readCredentialsFile() {
-  if (credentialsCache) return credentialsCache;
-
-  const path = "/root/credentials.env";
-  if (!existsSync(path)) {
-    credentialsCache = {};
-    return credentialsCache;
-  }
-
-  const content = readFileSync(path, "utf8");
-  const parsed: Record<string, string> = {};
-
-  for (const line of content.split(/\r?\n/)) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith("#") || trimmed === "(" || trimmed === ")") continue;
-    const equalsIndex = trimmed.indexOf("=");
-    if (equalsIndex <= 0) continue;
-    const key = trimmed.slice(0, equalsIndex).trim();
-    const value = trimmed.slice(equalsIndex + 1).trim().replace(/^['\"]|['\"]$/g, "");
-    parsed[key] = value;
-  }
-
-  credentialsCache = parsed;
-  return credentialsCache;
-}
-
-function credentialFallback(key: string) {
-  return readCredentialsFile()[key] ?? "";
-}
 
 export function getPublicUrl() {
   return process.env.PROJ_ARTE_PUBLIC_URL ?? fallbackPublicUrl;
 }
 
 export function getContactConfig() {
-  const whatsappRaw = process.env.WHATSAPP ?? process.env.PROJ_ARTE_WHATSAPP ?? credentialFallback("WHATSAPP") ?? "";
+  const whatsappRaw = process.env.WHATSAPP ?? process.env.PROJ_ARTE_WHATSAPP ?? "";
   const whatsappDigits = whatsappRaw.replace(/\D/g, "");
   const fallbackWhatsappDigits = "554892002451";
 
@@ -76,10 +42,10 @@ export function getStripeConfig() {
 export function getAdminConfig() {
   return {
     email:
-      process.env.PROJ_ARTE_ADMIN_EMAIL ?? process.env.EMAIL ?? credentialFallback("EMAIL") ?? "",
+      process.env.PROJ_ARTE_ADMIN_EMAIL ?? process.env.EMAIL ?? "",
     passwordHash: process.env.PROJ_ARTE_ADMIN_PASSWORD_HASH ?? "",
     passwordPlain:
-      process.env.PROJ_ARTE_ADMIN_PASSWORD ?? process.env.SENHA_EMAIL ?? credentialFallback("SENHA_EMAIL") ?? "",
+      process.env.PROJ_ARTE_ADMIN_PASSWORD ?? process.env.SENHA_EMAIL ?? "",
     sessionSecret:
       process.env.PROJ_ARTE_SESSION_SECRET ??
       process.env.PROJ_SCORE_INTERNAL_FUNCTION_TOKEN ??
