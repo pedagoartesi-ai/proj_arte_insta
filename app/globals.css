@@ -71,10 +71,7 @@ button:focus-visible {
   min-height: calc(100svh - 11px);
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  background:
-    radial-gradient(circle at 18% 20%, rgba(255, 226, 122, 0.3), transparent 28%),
-    radial-gradient(circle at 88% 18%, rgba(159, 231, 245, 0.34), transparent 26%),
-    var(--paper);
+  background: #fff4f9;
 }
 
 .site-header {
@@ -211,20 +208,9 @@ button:focus-visible {
   overflow: hidden;
 }
 
-.hero-art::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(247, 202, 225, 0.22);
-  mix-blend-mode: multiply;
-  pointer-events: none;
-  z-index: 2;
-}
-
 .hero-art__image {
   object-fit: fill;
   object-position: center center;
-  z-index: 1;
 }
 
 .section {
