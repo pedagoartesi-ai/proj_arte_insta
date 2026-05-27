@@ -68,7 +68,7 @@ button:focus-visible {
 }
 
 .first-fold {
-  min-height: calc(100svh - 9px);
+  min-height: calc(100svh - 11px);
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   background:
@@ -202,7 +202,7 @@ button:focus-visible {
 
 .hero-art {
   position: relative;
-  width: 96vw;
+  width: 92vw;
   margin-left: auto;
   margin-right: auto;
   height: 100%;
