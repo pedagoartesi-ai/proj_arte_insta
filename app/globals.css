@@ -202,8 +202,9 @@ button:focus-visible {
 
 .hero-art {
   position: relative;
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
+  width: min(96vw, 1400px);
+  margin-left: auto;
+  margin-right: auto;
   aspect-ratio: 3 / 2;
   height: auto;
   min-height: 0;
