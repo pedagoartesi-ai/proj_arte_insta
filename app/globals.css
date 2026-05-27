@@ -420,9 +420,7 @@ p {
 }
 
 .products-section {
-  background:
-    linear-gradient(rgba(247, 248, 251, 0.92), rgba(247, 248, 251, 0.92)),
-    repeating-linear-gradient(45deg, rgba(255, 194, 220, 0.22) 0 1px, transparent 1px 18px);
+  background: #ffdced;
 }
 
 .products-grid {
@@ -695,7 +693,7 @@ p {
 }
 
 .about-section {
-  background: var(--paper);
+  background: #ffdced;
 }
 
 .about-layout {
