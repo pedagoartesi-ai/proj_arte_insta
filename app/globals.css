@@ -68,7 +68,7 @@ button:focus-visible {
 }
 
 .first-fold {
-  min-height: 100svh;
+  min-height: calc(100svh - 8px);
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   background:
