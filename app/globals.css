@@ -596,8 +596,17 @@ p {
 .product-card__body {
   display: grid;
   justify-items: center;
-  padding: 14px 16px 16px;
+  gap: 8px;
+  padding: 14px 16px 18px;
   text-align: center;
+}
+
+.product-card__actions {
+  width: 100%;
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  margin-top: 4px;
 }
 
 .product-category {
@@ -626,7 +635,7 @@ p {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 132px;
+  width: min(100%, 220px);
   min-height: 38px;
   padding: 0 18px;
   border-radius: 999px;

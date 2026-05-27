@@ -752,12 +752,14 @@ function ProductCard({
         <span className="product-category">{categoryLabel}</span>
         <h3>{product.title}</h3>
         <p>{product.priceLabel}</p>
-        <Link className="buy-button" href={`/produto/${product.slug}`} aria-label={`Ver informativo de ${product.title}`}>
-          Ver informativo
-        </Link>
-        <button type="button" className="buy-button" onClick={onAdd} aria-label={`Adicionar ${product.title}`}>
-          <Plus aria-hidden="true" /> Adicionar
-        </button>
+        <div className="product-card__actions">
+          <Link className="buy-button" href={`/produto/${product.slug}`} aria-label={`Ver informativo de ${product.title}`}>
+            Ver informativo
+          </Link>
+          <button type="button" className="buy-button" onClick={onAdd} aria-label={`Adicionar ${product.title}`}>
+            <Plus aria-hidden="true" /> Adicionar
+          </button>
+        </div>
       </div>
       {product.featured ? <span className="featured-badge">Destaque</span> : null}
     </article>
