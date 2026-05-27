@@ -322,7 +322,15 @@ export function ProjetoArteStorefront({
                 </a>
 
                 <div className="main-nav__actions">
-                  <a href="#inicio" className="nav-tile">
+                  <a
+                    href="#inicio"
+                    className="nav-tile"
+                    onClick={() => {
+                      setActiveCategory("all");
+                      setCurrentPage(1);
+                      setFiltersOpen(false);
+                    }}
+                  >
                     <Home aria-hidden="true" />
                     <span>Início</span>
                   </a>
