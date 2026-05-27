@@ -159,41 +159,6 @@ export function ProjetoArteStorefront({
   }, []);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const container = document.querySelector(".products-section__bg") as HTMLDivElement | null;
-    if (!container) return;
-
-    const shaderContainer = document.createElement("div");
-    shaderContainer.className = "products-section__shader-container";
-    container.innerHTML = "";
-    container.appendChild(shaderContainer);
-
-    const moduleScript = document.createElement("script");
-    moduleScript.type = "module";
-    moduleScript.textContent = `
-      import { Renderer, Program, Mesh, Color, Triangle } from 'https://cdn.skypack.dev/ogl';
-      const vertexShader = 'attribute vec2 uv; attribute vec2 position; varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position, 0, 1); }';
-      const fragmentShader = 'precision highp float; uniform float uTime; uniform vec3 uColor; uniform vec3 uResolution; uniform vec2 uMouse; uniform float uAmplitude; uniform float uSpeed; varying vec2 vUv; void main(){ float mr = min(uResolution.x, uResolution.y); vec2 uv = (vUv.xy * 2.0 - 1.0) * uResolution.xy / mr; uv += (uMouse - vec2(0.5)) * uAmplitude; float d = -uTime * 0.5 * uSpeed; float a = 0.0; for (float i = 0.0; i < 8.0; ++i) { a += cos(i - d - a * uv.x); d += sin(uv.y * i + a); } d += uTime * 0.5 * uSpeed; vec3 col = vec3(cos(uv * vec2(d, a)) * 0.6 + 0.4, cos(a + d) * 0.5 + 0.5); col = cos(col * cos(vec3(d, a, 2.5)) * 0.5 + 0.5) * uColor; gl_FragColor = vec4(col, 1.0); }';
-      const renderer = new Renderer();
-      const gl = renderer.gl;
-      const geometry = new Triangle(gl);
-      const mouse = new Float32Array([0.5, 0.5]);
-      const program = new Program(gl, { vertex: vertexShader, fragment: fragmentShader, uniforms: { uTime: { value: 0 }, uColor: { value: new Color(0.8, 0.4, 1.0) }, uResolution: { value: new Color(1,1,1) }, uMouse: { value: mouse }, uAmplitude: { value: 0.12 }, uSpeed: { value: 0.6 } } });
-      const mesh = new Mesh(gl, { geometry, program });
-      const resize = () => { const rect = document.querySelector('.products-section__shader-container')?.getBoundingClientRect(); if(!rect) return; renderer.setSize(rect.width, rect.height); program.uniforms.uResolution.value = new Color(gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height); };
-      const onMouseMove = (e) => { const rect = document.querySelector('.products-section__shader-container')?.getBoundingClientRect(); if(!rect) return; mouse[0] = (e.clientX - rect.left) / rect.width; mouse[1] = 1.0 - (e.clientY - rect.top) / rect.height; };
-      const animate = (t = 0) => { requestAnimationFrame(animate); program.uniforms.uTime.value = t * 0.001; renderer.render({ scene: mesh }); };
-      const mount = document.querySelector('.products-section__shader-container');
-      if (mount) { mount.appendChild(gl.canvas); mount.addEventListener('mousemove', onMouseMove); window.addEventListener('resize', resize); resize(); animate(); }
-    `;
-    container.appendChild(moduleScript);
-
-    return () => {
-      container.innerHTML = "";
-    };
-  }, []);
-
-  useEffect(() => {
     if (!stripeReady || !clientSecret || !stripePublishableKey || !embeddedCheckoutRef.current) return;
 
     let cancelled = false;
@@ -509,7 +474,6 @@ export function ProjetoArteStorefront({
         ) : null}
 
         <section className="section products-section" id="produtos">
-          <div className="products-section__bg" aria-hidden="true" />
           <div className="container products-layout">
             <div>
               <div className="section-heading">
