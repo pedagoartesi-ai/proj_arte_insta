@@ -1,7 +1,7 @@
 import { compareSync } from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminSession } from "@/lib/proj-arte/auth";
-import { getAdminConfig } from "@/lib/proj-arte/env";
+import { getSupabaseAdminClient } from "@/lib/proj-arte/supabase";
 import { loginSchema } from "@/lib/proj-arte/schemas";
 
 export async function POST(request: NextRequest) {
@@ -11,25 +11,30 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "invalid_payload" }, { status: 400 });
   }
 
-  const config = getAdminConfig();
-  const emailOk = parsed.data.email.trim().toLowerCase() === config.email.trim().toLowerCase();
-  if (!emailOk) {
+  const supabase = getSupabaseAdminClient();
+  if (!supabase) {
+    return NextResponse.json({ error: "admin_auth_not_configured" }, { status: 503 });
+  }
+
+  const email = parsed.data.email.trim().toLowerCase();
+  const password = parsed.data.password;
+
+  const { data: adminUser, error } = await supabase
+    .from("admin_users")
+    .select("email,password_hash")
+    .eq("email", email)
+    .maybeSingle();
+
+  if (error || !adminUser) {
     return NextResponse.json({ error: "invalid_credentials" }, { status: 401 });
   }
 
-  const password = parsed.data.password.trim();
-  const plainPassword = config.passwordPlain.trim();
-  const passwordHash = config.passwordHash.trim();
-  const passwordOk = plainPassword
-    ? password === plainPassword
-    : passwordHash
-      ? compareSync(password, passwordHash)
-      : false;
+  const passwordOk = compareSync(password, adminUser.password_hash);
 
   if (!passwordOk) {
     return NextResponse.json({ error: "invalid_credentials" }, { status: 401 });
   }
 
-  await createAdminSession(config.email);
-  return NextResponse.json({ ok: true, email: config.email });
+  await createAdminSession(adminUser.email);
+  return NextResponse.json({ ok: true, email: adminUser.email });
 }
