@@ -71,7 +71,7 @@ button:focus-visible {
   min-height: calc(100svh - 11px);
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  background: #ffe8f3;
+  background: #ffdced;
 }
 
 .site-header {
@@ -204,7 +204,7 @@ button:focus-visible {
   margin-right: auto;
   height: 100%;
   min-height: 0;
-  background: #ffe8f3;
+  background: #ffdced;
   overflow: hidden;
 }
 
