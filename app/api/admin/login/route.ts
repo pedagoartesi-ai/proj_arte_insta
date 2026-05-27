@@ -12,14 +12,19 @@ export async function POST(request: NextRequest) {
   }
 
   const config = getAdminConfig();
-  const emailOk = parsed.data.email.toLowerCase() === config.email.toLowerCase();
+  const emailOk = parsed.data.email.trim().toLowerCase() === config.email.trim().toLowerCase();
   if (!emailOk) {
     return NextResponse.json({ error: "invalid_credentials" }, { status: 401 });
   }
 
-  const passwordOk = config.passwordHash
-    ? compareSync(parsed.data.password, config.passwordHash)
-    : parsed.data.password === config.passwordPlain;
+  const password = parsed.data.password.trim();
+  const plainPassword = config.passwordPlain.trim();
+  const passwordHash = config.passwordHash.trim();
+  const passwordOk = plainPassword
+    ? password === plainPassword
+    : passwordHash
+      ? compareSync(password, passwordHash)
+      : false;
 
   if (!passwordOk) {
     return NextResponse.json({ error: "invalid_credentials" }, { status: 401 });
