@@ -34,6 +34,10 @@ const email = "pedagoartesi@gmail.com";
 
 declare global {
   interface Window {
+    UnicornStudio?: {
+      isInitialized?: boolean;
+      init?: () => void;
+    };
     Stripe?: (publishableKey: string) => {
       initEmbeddedCheckout: (args: { fetchClientSecret: () => Promise<string> }) => {
         mount: (element: HTMLElement | string) => void;
@@ -130,6 +134,29 @@ export function ProjetoArteStorefront({
     () => filteredProducts.slice((safeCurrentPage - 1) * itemsPerPage, safeCurrentPage * itemsPerPage),
     [filteredProducts, safeCurrentPage],
   );
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    if (!window.UnicornStudio) {
+      window.UnicornStudio = { isInitialized: false };
+    }
+
+    const existing = document.querySelector('script[data-unicorn="true"]') as HTMLScriptElement | null;
+    if (existing) return;
+
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.29/dist/unicornStudio.umd.js";
+    script.async = true;
+    script.setAttribute("data-unicorn", "true");
+    script.onload = () => {
+      if (!window.UnicornStudio?.isInitialized) {
+        window.UnicornStudio?.init?.();
+        if (window.UnicornStudio) window.UnicornStudio.isInitialized = true;
+      }
+    };
+    document.head.appendChild(script);
+  }, []);
 
   useEffect(() => {
     if (!stripeReady || !clientSecret || !stripePublishableKey || !embeddedCheckoutRef.current) return;
@@ -590,6 +617,9 @@ export function ProjetoArteStorefront({
         </section>
 
         <section className="section contact-section" id="contato">
+          <div className="contact-section__bg" aria-hidden="true">
+            <div data-us-project="qTiAlX0sxkuBOAiL7qHL" className="contact-section__bg-project" />
+          </div>
           <div className="container contact-layout">
             <div>
               <span className="eyebrow">Contato</span>
