@@ -153,6 +153,15 @@ export async function getProductById(id: string) {
   return mapProductRow(data as ProductRow);
 }
 
+export async function getProductBySlug(slug: string) {
+  const supabase = getSupabaseAdminClient();
+  if (!supabase) return seedProducts.find((product) => product.slug === slug) ?? null;
+
+  const { data, error } = await supabase.from("products").select("*").eq("slug", slug).maybeSingle();
+  if (error || !data) return null;
+  return mapProductRow(data as ProductRow);
+}
+
 export async function createProduct(input: Partial<Product>) {
   const supabase = getSupabaseAdminClient();
   if (!supabase) {
