@@ -105,7 +105,7 @@ export function ProjetoArteStorefront({
   const [clientSecret, setClientSecret] = useState("");
   const [stripeReady, setStripeReady] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const itemsPerPage = 12;
   const embeddedCheckoutRef = useRef<HTMLDivElement | null>(null);
   const embeddedCheckoutInstance = useRef<{ unmount?: () => void } | null>(null);
 
