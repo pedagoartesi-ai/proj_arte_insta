@@ -213,7 +213,7 @@ button:focus-visible {
 }
 
 .hero-art__image {
-  object-fit: contain;
+  object-fit: fill;
   object-position: center center;
 }
 
