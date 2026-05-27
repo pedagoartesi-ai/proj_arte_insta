@@ -8,6 +8,7 @@ import {
   BadgeCheck,
   BookOpen,
   CalendarHeart,
+  Camera,
   ChevronLeft,
   ChevronRight,
   Heart,
@@ -49,6 +50,12 @@ type Props = {
   whatsappUrl: string;
   stripePublishableKey: string;
 };
+
+const socialLinks = (whatsappUrl: string) => [
+  { label: "WhatsApp", href: whatsappUrl || "#contato", icon: MessageCircle },
+  { label: "Instagram", href: "#contato", icon: Camera },
+  { label: "Facebook", href: "#contato", icon: Heart },
+];
 
 const categoryIcons: Record<string, typeof BadgeCheck> = {
   "avaliacoes-sondagens-relatorios": BadgeCheck,
