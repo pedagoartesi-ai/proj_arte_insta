@@ -930,8 +930,8 @@ p {
   align-items: center;
   gap: 16px;
   padding: 10px max(16px, calc((100vw - var(--container)) / 2));
-  background: var(--sky);
-  color: #30515a;
+  background: rgba(247, 131, 191, 0.9);
+  color: var(--paper);
   font-size: 0.86rem;
   font-weight: 800;
 }
