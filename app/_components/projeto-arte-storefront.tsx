@@ -741,7 +741,10 @@ function ProductCard({
       >
         <div className="product-preview__rail">
           {(slides.length ? slides : [""]).map((slide, index) => (
-            <div className="product-preview__sheet" key={`${product.title}-${index}`}>
+            <div
+              className={slide ? "product-preview__sheet product-preview__sheet--image" : "product-preview__sheet"}
+              key={`${product.title}-${index}`}
+            >
               {slide ? (
                 <img src={slide} alt={`${product.title} - imagem ${index + 1}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               ) : (

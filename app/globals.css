@@ -519,6 +519,16 @@ p {
   transform: rotate(-2deg);
 }
 
+.product-preview__sheet--image {
+  padding: 4px;
+}
+
+.product-preview__sheet--image img {
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+}
+
 .product-preview__sheet svg {
   width: 38px;
   height: 38px;
