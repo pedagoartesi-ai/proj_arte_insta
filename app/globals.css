@@ -202,7 +202,8 @@ button:focus-visible {
   position: relative;
   width: 100vw;
   margin-left: calc(50% - 50vw);
-  height: min(52svh, 560px);
+  aspect-ratio: 3 / 2;
+  height: auto;
   min-height: 0;
   background: var(--paper);
   overflow: hidden;
