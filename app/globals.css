@@ -131,12 +131,19 @@ button:focus-visible {
 .main-nav__inner {
   display: flex;
   align-items: stretch;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 0;
+  width: 100vw;
+  max-width: none;
+  margin-left: calc(50% - 50vw);
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .main-nav__actions {
-  flex: 0 1 auto;
+  margin-left: auto;
+  flex: 0 0 auto;
   display: grid;
   grid-template-columns: repeat(6, minmax(98px, 1fr));
 }
