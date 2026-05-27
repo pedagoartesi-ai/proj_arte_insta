@@ -69,6 +69,7 @@ button:focus-visible {
 }
 
 .first-fold {
+  height: calc(100svh - 11px);
   min-height: calc(100svh - 11px);
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
@@ -208,7 +209,7 @@ button:focus-visible {
   width: 92vw;
   margin-left: auto;
   margin-right: auto;
-  height: 100%;
+  height: calc(100svh - var(--topbar-height) - 11px);
   min-height: 0;
   background: #ffdced;
   overflow: hidden;
@@ -964,7 +965,8 @@ p {
   }
 
   .first-fold {
-    min-height: 100svh;
+    height: calc(100svh - 11px);
+    min-height: calc(100svh - 11px);
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
   }
@@ -1029,8 +1031,9 @@ p {
 
   .hero-art {
     min-height: 0;
-    height: 100%;
-    margin-left: calc(50% - 50vw);
+    height: calc(100svh - var(--topbar-height) - 11px);
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .category-grid,
@@ -1054,7 +1057,7 @@ p {
 
 @media (max-width: 430px) {
   .hero-art {
-    height: 100%;
+    height: calc(100svh - var(--topbar-height) - 11px);
   }
 }
 
