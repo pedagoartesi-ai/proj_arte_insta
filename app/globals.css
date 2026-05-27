@@ -89,7 +89,7 @@ button:focus-visible {
   justify-items: start;
   text-align: left;
   line-height: 1;
-  padding: 10px 10px 10px 8px;
+  padding: 10px 8px 10px 2px;
   border-right: 1px solid rgba(255, 255, 255, 0.44);
 }
 
@@ -131,7 +131,7 @@ button:focus-visible {
 .main-nav__inner {
   display: flex;
   align-items: stretch;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 0;
 }
 
