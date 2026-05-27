@@ -314,7 +314,7 @@ export function ProjetoArteStorefront({
         <section className="first-fold" id="inicio" aria-label="Artes que Ensinam">
           <header className="site-header">
             <nav className="main-nav" aria-label="Navegação principal">
-              <div className="container main-nav__inner">
+              <div className="main-nav__inner">
                 <a className="nav-brand" href="#inicio" aria-label="Artes que Ensinam">
                   <span className="brand-mark__abc">ABC</span>
                   <span className="brand-mark__script">Artes que Ensinam</span>

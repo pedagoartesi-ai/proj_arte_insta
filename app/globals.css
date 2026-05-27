@@ -126,6 +126,8 @@ button:focus-visible {
 .main-nav {
   background: var(--pink-500);
   color: var(--paper);
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
 }
 
 .main-nav__inner {
@@ -133,12 +135,7 @@ button:focus-visible {
   align-items: stretch;
   justify-content: flex-start;
   gap: 0;
-  width: 100vw;
-  max-width: none;
-  margin-left: calc(50% - 50vw);
-  margin-right: 0;
-  padding-left: 0;
-  padding-right: 0;
+  width: 100%;
 }
 
 .main-nav__actions {
