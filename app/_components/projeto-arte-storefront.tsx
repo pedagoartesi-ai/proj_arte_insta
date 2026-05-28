@@ -101,6 +101,10 @@ export function ProjetoArteStorefront({
   const [contactEmailOpen, setContactEmailOpen] = useState(false);
   const [contactEmailSubject, setContactEmailSubject] = useState("Contato pelo site Artes que Ensinam");
   const [contactEmailBody, setContactEmailBody] = useState("");
+  const [contactSenderEmail, setContactSenderEmail] = useState("");
+  const [contactSenderWhatsapp, setContactSenderWhatsapp] = useState("");
+  const [contactSendStatus, setContactSendStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [contactSendMessage, setContactSendMessage] = useState("");
   const [checkoutStatus, setCheckoutStatus] = useState<"idle" | "creating" | "ready" | "error">("idle");
   const [checkoutMessage, setCheckoutMessage] = useState("");
   const [clientSecret, setClientSecret] = useState("");
@@ -189,13 +193,31 @@ export function ProjetoArteStorefront({
     };
   }, [clientSecret, stripePublishableKey, stripeReady]);
 
-  const contactMailto = useMemo(() => {
-    const to = email;
-    const params = new URLSearchParams();
-    if (contactEmailSubject.trim()) params.set("subject", contactEmailSubject.trim());
-    if (contactEmailBody.trim()) params.set("body", contactEmailBody.trim());
-    return `mailto:${to}${params.toString() ? `?${params.toString()}` : ""}`;
-  }, [contactEmailBody, contactEmailSubject]);
+  async function sendContactEmail() {
+    setContactSendStatus("sending");
+    setContactSendMessage("");
+
+    const res = await fetch("/api/contact/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        subject: contactEmailSubject,
+        message: contactEmailBody,
+        email: contactSenderEmail,
+        whatsapp: contactSenderWhatsapp,
+      }),
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      setContactSendStatus("error");
+      setContactSendMessage(data.error ? `Falha: ${data.error}` : "Não foi possível enviar.");
+      return;
+    }
+
+    setContactSendStatus("success");
+    setContactSendMessage("Mensagem enviada com sucesso.");
+  }
 
   const cartItems = useMemo(() => {
     return Object.entries(cart)
@@ -655,6 +677,24 @@ export function ProjetoArteStorefront({
                   </div>
                   <div className="contact-mailbox">
                     <label>
+                      Seu email
+                      <input
+                        type="email"
+                        value={contactSenderEmail}
+                        onChange={(e) => setContactSenderEmail(e.target.value)}
+                        placeholder="seuemail@dominio.com"
+                      />
+                    </label>
+                    <label>
+                      WhatsApp
+                      <input
+                        type="text"
+                        value={contactSenderWhatsapp}
+                        onChange={(e) => setContactSenderWhatsapp(e.target.value)}
+                        placeholder="(00) 00000-0000"
+                      />
+                    </label>
+                    <label>
                       Assunto
                       <input
                         type="text"
@@ -672,9 +712,15 @@ export function ProjetoArteStorefront({
                         rows={5}
                       />
                     </label>
-                    <a className="checkout-button contact-mailbox__send" href={contactMailto}>
+                    <button
+                      type="button"
+                      className="checkout-button contact-mailbox__send"
+                      onClick={sendContactEmail}
+                      disabled={contactSendStatus === "sending"}
+                    >
                       <Send aria-hidden="true" /> Enviar email
-                    </a>
+                    </button>
+                    {contactSendMessage ? <p className="contact-mailbox__feedback">{contactSendMessage}</p> : null}
                   </div>
                 </div>
               </div>
