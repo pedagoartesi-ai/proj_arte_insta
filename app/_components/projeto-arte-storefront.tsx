@@ -194,29 +194,46 @@ export function ProjetoArteStorefront({
   }, [clientSecret, stripePublishableKey, stripeReady]);
 
   async function sendContactEmail() {
-    setContactSendStatus("sending");
-    setContactSendMessage("");
+    const senderEmail = contactSenderEmail.trim();
+    const senderWhatsapp = contactSenderWhatsapp.trim();
+    const subject = contactEmailSubject.trim() || "Contato pelo site Artes que Ensinam";
+    const message = contactEmailBody.trim();
 
-    const res = await fetch("/api/contact/send", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        subject: contactEmailSubject,
-        message: contactEmailBody,
-        email: contactSenderEmail,
-        whatsapp: contactSenderWhatsapp,
-      }),
-    });
-
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
+    if (!senderEmail || !message) {
       setContactSendStatus("error");
-      setContactSendMessage(data.error ? `Falha: ${data.error}` : "Não foi possível enviar.");
+      setContactSendMessage("Preencha seu email e a mensagem antes de enviar.");
       return;
     }
 
-    setContactSendStatus("success");
-    setContactSendMessage("Mensagem enviada com sucesso.");
+    setContactSendStatus("sending");
+    setContactSendMessage("");
+
+    try {
+      const res = await fetch("/api/contact/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          subject,
+          message,
+          email: senderEmail,
+          whatsapp: senderWhatsapp,
+        }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setContactSendStatus("error");
+        setContactSendMessage(data.message ?? "Não foi possível enviar. Tente novamente.");
+        return;
+      }
+
+      setContactSendStatus("success");
+      setContactSendMessage("Mensagem enviada com sucesso.");
+      setContactEmailBody("");
+    } catch {
+      setContactSendStatus("error");
+      setContactSendMessage("Não foi possível conectar ao envio. Tente novamente.");
+    }
   }
 
   const cartItems = useMemo(() => {
@@ -675,7 +692,14 @@ export function ProjetoArteStorefront({
                       ×
                     </button>
                   </div>
-                  <div className="contact-mailbox">
+                  <form
+                    className="contact-mailbox"
+                    noValidate
+                    onSubmit={(event) => {
+                      event.preventDefault();
+                      void sendContactEmail();
+                    }}
+                  >
                     <label>
                       Seu email
                       <input
@@ -683,6 +707,7 @@ export function ProjetoArteStorefront({
                         value={contactSenderEmail}
                         onChange={(e) => setContactSenderEmail(e.target.value)}
                         placeholder="seuemail@dominio.com"
+                        autoComplete="email"
                       />
                     </label>
                     <label>
@@ -692,6 +717,7 @@ export function ProjetoArteStorefront({
                         value={contactSenderWhatsapp}
                         onChange={(e) => setContactSenderWhatsapp(e.target.value)}
                         placeholder="(00) 00000-0000"
+                        autoComplete="tel"
                       />
                     </label>
                     <label>
@@ -713,15 +739,14 @@ export function ProjetoArteStorefront({
                       />
                     </label>
                     <button
-                      type="button"
+                      type="submit"
                       className="checkout-button contact-mailbox__send"
-                      onClick={sendContactEmail}
                       disabled={contactSendStatus === "sending"}
                     >
-                      <Send aria-hidden="true" /> Enviar email
+                      {contactSendStatus === "sending" ? <Loader2 aria-hidden="true" /> : <Send aria-hidden="true" />} Enviar email
                     </button>
                     {contactSendMessage ? <p className="contact-mailbox__feedback">{contactSendMessage}</p> : null}
-                  </div>
+                  </form>
                 </div>
               </div>
             ) : null}
