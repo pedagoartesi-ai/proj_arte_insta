@@ -21,8 +21,12 @@ export async function POST(request: Request) {
   }
 
   const resendApiKey = process.env.RESEND_API_KEY ?? process.env.PROJ_ARTE_RESEND_API_KEY ?? "";
-  const resendFrom = process.env.RESEND_FROM_EMAIL ?? process.env.PROJ_ARTE_RESEND_FROM_EMAIL ?? "";
-  if (!resendApiKey || !resendFrom) {
+  const resendFrom =
+    process.env.RESEND_FROM_EMAIL ??
+    process.env.RESEND_FROM ??
+    process.env.PROJ_ARTE_RESEND_FROM_EMAIL ??
+    "onboarding@resend.dev";
+  if (!resendApiKey) {
     return NextResponse.json({ error: "resend_not_configured" }, { status: 503 });
   }
 

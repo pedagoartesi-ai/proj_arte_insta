@@ -19,10 +19,14 @@ export async function POST(request: Request) {
   }
 
   const resendApiKey = process.env.RESEND_API_KEY ?? process.env.PROJ_ARTE_RESEND_API_KEY ?? "";
-  const resendFrom = process.env.RESEND_FROM_EMAIL ?? process.env.PROJ_ARTE_RESEND_FROM_EMAIL ?? "";
+  const resendFrom =
+    process.env.RESEND_FROM_EMAIL ??
+    process.env.RESEND_FROM ??
+    process.env.PROJ_ARTE_RESEND_FROM_EMAIL ??
+    "onboarding@resend.dev";
   const resendTo = process.env.RESEND_TO_EMAIL ?? process.env.RESEND_CONTACT_TO_EMAIL ?? process.env.PROJ_ARTE_CONTACT_TO_EMAIL ?? "pedagoartesi@gmail.com";
 
-  if (!resendApiKey || !resendFrom) {
+  if (!resendApiKey) {
     return NextResponse.json({ error: "resend_not_configured", message: "Envio de email não configurado no servidor." }, { status: 503 });
   }
 
