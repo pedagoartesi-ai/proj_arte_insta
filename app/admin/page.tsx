@@ -17,10 +17,19 @@ type Product = {
   id: string;
   title: string;
   slug: string;
+  description: string;
   activityTypeSlug: string;
+  priceCents: number;
   priceLabel: string;
+  pdfUrl: string | null;
+  coverImageUrl: string | null;
+  galleryUrls: string[];
   active: boolean;
   featured: boolean;
+  checkoutUrl: string | null;
+  stripePriceId: string | null;
+  stripeProductId: string | null;
+  sortOrder: number;
 };
 
 const emptyForm = {
@@ -41,6 +50,16 @@ const emptyForm = {
   sortOrder: 0,
 };
 
+function slugify(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 export default function AdminPage() {
   const [me, setMe] = useState<MeResponse>({ authenticated: false });
   const [email, setEmail] = useState("");
@@ -51,6 +70,7 @@ export default function AdminPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [form, setForm] = useState(emptyForm);
+  const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [uploadingPdf, setUploadingPdf] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
   const [uploadingGallery, setUploadingGallery] = useState(false);
@@ -104,16 +124,18 @@ export default function AdminPage() {
     setMe({ authenticated: false });
   }
 
-  async function handleCreateProduct(event: FormEvent<HTMLFormElement>) {
+  async function handleSaveProduct(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoading(true);
     setMessage("");
+    const slug = form.slug || slugify(form.title);
     const payload = {
       ...form,
+      slug,
       priceCents: Number(form.priceCents),
       sortOrder: Number(form.sortOrder),
       galleryUrls: form.galleryUrls
-        .split(/\n|,/) 
+        .split(/\n|,/)
         .map((item) => item.trim())
         .filter(Boolean),
       pdfUrl: form.pdfUrl || null,
@@ -124,20 +146,51 @@ export default function AdminPage() {
       priceLabel: form.priceLabel || undefined,
     };
 
-    const res = await fetch("/api/admin/products", {
-      method: "POST",
+    const endpoint = editingProductId ? `/api/admin/products/${editingProductId}` : "/api/admin/products";
+    const res = await fetch(endpoint, {
+      method: editingProductId ? "PATCH" : "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
     setLoading(false);
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
-      setMessage(`Falha ao criar: ${body.error ?? "erro"}`);
+      setMessage(`Falha ao salvar: ${body.error ?? "erro"}`);
       return;
     }
-    setMessage("Produto criado.");
+    setMessage(editingProductId ? "Produto atualizado." : "Produto criado.");
+    setEditingProductId(null);
     setForm(emptyForm);
     await refreshCatalog();
+  }
+
+  function startEditProduct(product: Product) {
+    setEditingProductId(product.id);
+    setMessage("");
+    setForm({
+      title: product.title,
+      slug: product.slug,
+      activityTypeSlug: product.activityTypeSlug,
+      priceCents: product.priceCents,
+      priceLabel: product.priceLabel,
+      description: product.description,
+      pdfUrl: product.pdfUrl ?? "",
+      coverImageUrl: product.coverImageUrl ?? "",
+      galleryUrls: product.galleryUrls.join("\n"),
+      checkoutUrl: product.checkoutUrl ?? "",
+      stripePriceId: product.stripePriceId ?? "",
+      stripeProductId: product.stripeProductId ?? "",
+      featured: product.featured,
+      active: product.active,
+      sortOrder: product.sortOrder,
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function cancelEdit() {
+    setEditingProductId(null);
+    setForm(emptyForm);
+    setMessage("");
   }
 
   async function removeProduct(id: string) {
@@ -179,7 +232,7 @@ export default function AdminPage() {
   return (
     <main style={{ padding: 24, maxWidth: 1200, margin: "0 auto", fontFamily: "system-ui, sans-serif" }}>
       <h1>Admin — Artes que Ensinam</h1>
-      <p>Backend preparado para produtos, PDF, preços, Stripe e filtros por atividade.</p>
+      <p>Cadastro enxuto para publicar material, ligar o preço do Stripe e testar entrega do PDF.</p>
       {message ? <p>{message}</p> : null}
 
       {!isAuthenticated ? (
@@ -207,17 +260,17 @@ export default function AdminPage() {
           </div>
 
           <section style={{ marginTop: 24 }}>
-            <h2>Novo produto</h2>
-            <form onSubmit={handleCreateProduct} style={{ display: "grid", gap: 10 }}>
+            <h2>{editingProductId ? "Editar produto" : "Novo produto"}</h2>
+            <form onSubmit={handleSaveProduct} style={{ display: "grid", gap: 10 }}>
               <input placeholder="Título" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
-              <input placeholder="Slug" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} />
               <select value={form.activityTypeSlug} onChange={(e) => setForm({ ...form, activityTypeSlug: e.target.value })}>
                 {categories.map((category) => (
                   <option value={category.slug} key={category.id}>{category.name}</option>
                 ))}
               </select>
-              <input type="number" placeholder="Preço em centavos" value={form.priceCents} onChange={(e) => setForm({ ...form, priceCents: Number(e.target.value) })} />
+              <input type="number" min={0} step={1} placeholder="Preço em centavos (ex: 1000 para R$ 10,00)" value={form.priceCents} onChange={(e) => setForm({ ...form, priceCents: Number(e.target.value) })} />
               <input placeholder="Preço label (ex: R$ 10,00)" value={form.priceLabel} onChange={(e) => setForm({ ...form, priceLabel: e.target.value })} />
+              <input placeholder="Stripe Price ID (price_...)" value={form.stripePriceId} onChange={(e) => setForm({ ...form, stripePriceId: e.target.value.trim() })} />
               <textarea placeholder="Descrição" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
               <div style={{ display: "grid", gap: 8 }}>
                 <label>PDF do produto (upload)</label>
@@ -284,7 +337,7 @@ export default function AdminPage() {
                       const uploaded = await Promise.all(files.map((file) => uploadAsset(file, "products/gallery")));
                       setForm((prev) => {
                         const existing = prev.galleryUrls
-                          .split(/\n|,/) 
+                          .split(/\n|,/)
                           .map((item) => item.trim())
                           .filter(Boolean);
                         return { ...prev, galleryUrls: [...existing, ...uploaded].join("\n") };
@@ -300,13 +353,13 @@ export default function AdminPage() {
                 />
                 <textarea placeholder="URLs da galeria (preenchido automaticamente; 1 por linha)" value={form.galleryUrls} onChange={(e) => setForm({ ...form, galleryUrls: e.target.value })} />
               </div>
-              <input placeholder="Checkout URL" value={form.checkoutUrl} onChange={(e) => setForm({ ...form, checkoutUrl: e.target.value })} />
-              <input placeholder="Stripe Price ID" value={form.stripePriceId} onChange={(e) => setForm({ ...form, stripePriceId: e.target.value })} />
-              <input placeholder="Stripe Product ID" value={form.stripeProductId} onChange={(e) => setForm({ ...form, stripeProductId: e.target.value })} />
-              <input type="number" placeholder="Ordem" value={form.sortOrder} onChange={(e) => setForm({ ...form, sortOrder: Number(e.target.value) })} />
-              <label><input type="checkbox" checked={form.featured} onChange={(e) => setForm({ ...form, featured: e.target.checked })} /> Destaque</label>
               <label><input type="checkbox" checked={form.active} onChange={(e) => setForm({ ...form, active: e.target.checked })} /> Ativo</label>
-              <button type="submit" disabled={loading || uploadingPdf || uploadingCover || uploadingGallery}>Salvar produto</button>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <button type="submit" disabled={loading || uploadingPdf || uploadingCover || uploadingGallery}>
+                  {editingProductId ? "Atualizar produto" : "Salvar produto"}
+                </button>
+                {editingProductId ? <button type="button" onClick={cancelEdit}>Cancelar edição</button> : null}
+              </div>
             </form>
           </section>
 
@@ -318,8 +371,13 @@ export default function AdminPage() {
                   <strong>{product.title}</strong>
                   <div>{product.activityTypeSlug}</div>
                   <div>{product.priceLabel}</div>
-                  <div>{product.featured ? "Destaque" : "Normal"} · {product.active ? "Ativo" : "Inativo"}</div>
-                  <button onClick={() => removeProduct(product.id)}>Excluir</button>
+                  <div>Stripe: {product.stripePriceId ? product.stripePriceId : "pendente"}</div>
+                  <div>PDF: {product.pdfUrl ? "preenchido" : "pendente"}</div>
+                  <div>Status: {product.active ? "Ativo" : "Inativo"}</div>
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
+                    <button type="button" onClick={() => startEditProduct(product)}>Editar</button>
+                    <button type="button" onClick={() => removeProduct(product.id)}>Excluir</button>
+                  </div>
                 </article>
               ))}
             </div>
