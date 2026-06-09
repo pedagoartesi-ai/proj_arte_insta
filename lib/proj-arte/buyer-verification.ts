@@ -103,6 +103,16 @@ export function buyerVerificationTokenExpiryMinutes() {
   return TOKEN_TTL_MINUTES;
 }
 
+function describeSupabaseError(error: unknown, fallback: string) {
+  if (!error) return fallback;
+  if (error instanceof Error) return error.message;
+  if (typeof error === "object") {
+    const details = error as { message?: string; code?: string; details?: string; hint?: string };
+    return [details.message, details.code, details.details, details.hint].filter(Boolean).join(" | ") || fallback;
+  }
+  return String(error);
+}
+
 export async function persistBuyerVerification(
   supabase: SupabaseClient,
   email: string,
@@ -122,7 +132,7 @@ export async function persistBuyerVerification(
     .single();
 
   if (error || !data) {
-    throw error ?? new Error("buyer_verification_insert_failed");
+    throw new Error(describeSupabaseError(error, "buyer_verification_insert_failed"));
   }
 
   return data as BuyerEmailVerificationRow;
@@ -154,7 +164,7 @@ export async function markBuyerVerificationAsVerified(
     .single();
 
   if (error || !data) {
-    throw error ?? new Error("buyer_verification_update_failed");
+    throw new Error(describeSupabaseError(error, "buyer_verification_update_failed"));
   }
 
   return data as BuyerEmailVerificationRow;
