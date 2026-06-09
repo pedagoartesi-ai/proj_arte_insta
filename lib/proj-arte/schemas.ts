@@ -52,6 +52,7 @@ export const buyerEmailRequestSchema = z.object({
 export const buyerEmailVerifySchema = z.object({
   email: z.string().email(),
   code: z.string().regex(/^\d{6}$/),
+  requestToken: z.string().min(1),
 });
 
 export const uploadSignSchema = z.object({

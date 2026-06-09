@@ -95,6 +95,7 @@ export function ProjetoArteStorefront({
   const [cart, setCart] = useState<Record<string, number>>({});
   const [emailInput, setEmailInput] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
+  const [verificationRequestToken, setVerificationRequestToken] = useState("");
   const [verificationToken, setVerificationToken] = useState("");
   const [verificationStatus, setVerificationStatus] = useState<"idle" | "sending" | "code-sent" | "verifying" | "verified" | "error">("idle");
   const [verificationMessage, setVerificationMessage] = useState("");
@@ -276,6 +277,8 @@ export function ProjetoArteStorefront({
   async function requestEmailVerification() {
     setVerificationStatus("sending");
     setVerificationMessage("");
+    setVerificationRequestToken("");
+    setVerificationToken("");
     const res = await fetch("/api/buyer/email/request", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -290,16 +293,23 @@ export function ProjetoArteStorefront({
     }
 
     setVerificationStatus("code-sent");
+    setVerificationRequestToken(data.verificationRequestToken ?? "");
     setVerificationMessage(`Código enviado para ${data.email}.`);
   }
 
   async function verifyEmailCode() {
+    if (!verificationRequestToken) {
+      setVerificationStatus("error");
+      setVerificationMessage("Peça um novo código antes de verificar.");
+      return;
+    }
+
     setVerificationStatus("verifying");
     setVerificationMessage("");
     const res = await fetch("/api/buyer/email/verify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: emailInput, code: verificationCode }),
+      body: JSON.stringify({ email: emailInput, code: verificationCode, requestToken: verificationRequestToken }),
     });
 
     const data = await res.json().catch(() => ({}));

@@ -47,6 +47,60 @@ export function createBuyerEmailToken(input: { email: string; verificationId: st
   return { token: `${encoded}.${signature}`, expiresAt };
 }
 
+export function createBuyerVerificationRequestToken(input: { email: string; codeHash: string }) {
+  const expiresAt = new Date(Date.now() + CODE_TTL_MINUTES * 60 * 1000).toISOString();
+  const payload = {
+    id: randomUUID(),
+    email: normalizeBuyerEmail(input.email),
+    codeHash: input.codeHash,
+    expiresAt,
+    nonce: randomUUID(),
+  };
+  const encoded = Buffer.from(JSON.stringify(payload)).toString("base64url");
+  const signature = createHmac("sha256", secretSeed()).update(encoded).digest("base64url");
+  return { token: `${encoded}.${signature}`, id: payload.id, expiresAt };
+}
+
+export function verifyBuyerVerificationRequestToken(token: string, expectedEmail: string, code: string) {
+  const [encoded, signature] = token.split(".");
+  if (!encoded || !signature) return { ok: false as const, reason: "malformed" };
+
+  const expectedSignature = createHmac("sha256", secretSeed()).update(encoded).digest("base64url");
+  const signatureBuffer = Buffer.from(signature);
+  const expectedBuffer = Buffer.from(expectedSignature);
+  if (signatureBuffer.length !== expectedBuffer.length || !timingSafeEqual(signatureBuffer, expectedBuffer)) {
+    return { ok: false as const, reason: "invalid_signature" };
+  }
+
+  try {
+    const payload = JSON.parse(Buffer.from(encoded, "base64url").toString("utf8")) as {
+      id: string;
+      email: string;
+      codeHash: string;
+      expiresAt: string;
+    };
+
+    if (normalizeBuyerEmail(payload.email) !== normalizeBuyerEmail(expectedEmail)) {
+      return { ok: false as const, reason: "email_mismatch" };
+    }
+
+    if (Date.parse(payload.expiresAt) < Date.now()) {
+      return { ok: false as const, reason: "expired" };
+    }
+
+    const expectedHash = hashBuyerCode(expectedEmail, code);
+    const expectedHashBuffer = Buffer.from(expectedHash);
+    const codeHashBuffer = Buffer.from(payload.codeHash);
+    if (expectedHashBuffer.length !== codeHashBuffer.length || !timingSafeEqual(expectedHashBuffer, codeHashBuffer)) {
+      return { ok: false as const, reason: "invalid_code" };
+    }
+
+    return { ok: true as const, payload };
+  } catch {
+    return { ok: false as const, reason: "invalid_payload" };
+  }
+}
+
 export function verifyBuyerEmailToken(token: string, expectedEmail: string) {
   const [encoded, signature] = token.split(".");
   if (!encoded || !signature) return { ok: false as const, reason: "malformed" };
