@@ -50,6 +50,19 @@ const emptyForm = {
   sortOrder: 0,
 };
 
+function formatBRLFromCents(priceCents: number) {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(priceCents / 100);
+}
+
+function centsFromReaisInput(value: string) {
+  const numberValue = Number(value);
+  if (!Number.isFinite(numberValue) || numberValue < 0) return 0;
+  return Math.round(numberValue * 100);
+}
+
 function slugify(value: string) {
   return value
     .normalize("NFD")
@@ -143,7 +156,7 @@ export default function AdminPage() {
       checkoutUrl: form.checkoutUrl || null,
       stripePriceId: form.stripePriceId || null,
       stripeProductId: form.stripeProductId || null,
-      priceLabel: form.priceLabel || undefined,
+      priceLabel: formatBRLFromCents(Number(form.priceCents)),
     };
 
     const endpoint = editingProductId ? `/api/admin/products/${editingProductId}` : "/api/admin/products";
@@ -270,8 +283,16 @@ export default function AdminPage() {
                   <option value={category.slug} key={category.id}>{category.name}</option>
                 ))}
               </select>
-              <input id="product-price-cents" name="priceCents" type="number" min={0} step={1} placeholder="Preço em centavos (ex: 1000 para R$ 10,00)" value={form.priceCents} onChange={(e) => setForm({ ...form, priceCents: Number(e.target.value) })} />
-              <input id="product-price-label" name="priceLabel" placeholder="Preço label (ex: R$ 10,00)" value={form.priceLabel} onChange={(e) => setForm({ ...form, priceLabel: e.target.value })} />
+              <input
+                id="product-price-reais"
+                name="priceReais"
+                type="number"
+                min={0}
+                step={0.01}
+                placeholder="Preço em reais (ex: 10,00)"
+                value={form.priceCents / 100}
+                onChange={(e) => setForm({ ...form, priceCents: centsFromReaisInput(e.target.value) })}
+              />
               <input id="product-stripe-price-id" name="stripePriceId" placeholder="Stripe Price ID (price_...)" value={form.stripePriceId} onChange={(e) => setForm({ ...form, stripePriceId: e.target.value.trim() })} />
               <textarea id="product-description" name="description" placeholder="Descrição" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
               <div style={{ display: "grid", gap: 8 }}>
@@ -378,7 +399,7 @@ export default function AdminPage() {
                 <article key={product.id} style={{ border: "1px solid #ddd", padding: 12, borderRadius: 12 }}>
                   <strong>{product.title}</strong>
                   <div>{product.activityTypeSlug}</div>
-                  <div>{product.priceLabel}</div>
+                  <div>{formatBRLFromCents(product.priceCents)}</div>
                   <div>Stripe: {product.stripePriceId ? product.stripePriceId : "pendente"}</div>
                   <div>PDF: {product.pdfUrl ? "preenchido" : "pendente"}</div>
                   <div>Status: {product.active ? "Ativo" : "Inativo"}</div>

@@ -285,7 +285,7 @@ export function ProjetoArteStorefront({
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
       setVerificationStatus("error");
-      setVerificationMessage(data.error ? `Falha: ${data.error}` : "Não foi possível enviar o código.");
+      setVerificationMessage(data.message ?? (data.error ? `Falha: ${data.error}` : "Não foi possível enviar o código."));
       return;
     }
 

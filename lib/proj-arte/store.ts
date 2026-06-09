@@ -44,8 +44,31 @@ function mapCategoryRow(row: CategoryRow): ActivityType {
   };
 }
 
+function formatPriceLabel(priceCents: number) {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(priceCents / 100);
+}
+
+function parsePriceLabelToCents(label: string | null) {
+  if (!label) return null;
+  const normalized = label
+    .replace(/[^\d,.-]/g, "")
+    .replace(/\./g, "")
+    .replace(",", ".");
+  const value = Number(normalized);
+  if (!Number.isFinite(value) || value <= 0) return null;
+  return Math.round(value * 100);
+}
+
 function mapProductRow(row: ProductRow): Product {
-  const priceCents = row.price_cents ?? 0;
+  const storedPriceCents = row.price_cents ?? 0;
+  const labelPriceCents = parsePriceLabelToCents(row.price_label);
+  const priceCents =
+    labelPriceCents && labelPriceCents !== storedPriceCents
+      ? labelPriceCents
+      : storedPriceCents;
   return {
     id: row.id,
     slug: row.slug,
@@ -53,12 +76,7 @@ function mapProductRow(row: ProductRow): Product {
     description: row.description ?? "",
     activityTypeSlug: row.activity_type_slug,
     priceCents,
-    priceLabel:
-      row.price_label ??
-      new Intl.NumberFormat("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      }).format(priceCents / 100),
+    priceLabel: formatPriceLabel(priceCents),
     pdfUrl: row.pdf_url,
     coverImageUrl: row.cover_image_url,
     galleryUrls: row.gallery_urls ?? [],
