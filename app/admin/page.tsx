@@ -237,9 +237,11 @@ export default function AdminPage() {
 
       {!isAuthenticated ? (
         <form onSubmit={handleLogin} style={{ display: "grid", gap: 12, maxWidth: 420, marginTop: 24 }}>
-          <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input id="admin-email" name="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             <input
+              id="admin-password"
+              name="password"
               placeholder="Senha"
               type={showPassword ? "text" : "password"}
               value={password}
@@ -262,19 +264,21 @@ export default function AdminPage() {
           <section style={{ marginTop: 24 }}>
             <h2>{editingProductId ? "Editar produto" : "Novo produto"}</h2>
             <form onSubmit={handleSaveProduct} style={{ display: "grid", gap: 10 }}>
-              <input placeholder="Título" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
-              <select value={form.activityTypeSlug} onChange={(e) => setForm({ ...form, activityTypeSlug: e.target.value })}>
+              <input id="product-title" name="title" placeholder="Título" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+              <select id="product-category" name="activityTypeSlug" value={form.activityTypeSlug} onChange={(e) => setForm({ ...form, activityTypeSlug: e.target.value })}>
                 {categories.map((category) => (
                   <option value={category.slug} key={category.id}>{category.name}</option>
                 ))}
               </select>
-              <input type="number" min={0} step={1} placeholder="Preço em centavos (ex: 1000 para R$ 10,00)" value={form.priceCents} onChange={(e) => setForm({ ...form, priceCents: Number(e.target.value) })} />
-              <input placeholder="Preço label (ex: R$ 10,00)" value={form.priceLabel} onChange={(e) => setForm({ ...form, priceLabel: e.target.value })} />
-              <input placeholder="Stripe Price ID (price_...)" value={form.stripePriceId} onChange={(e) => setForm({ ...form, stripePriceId: e.target.value.trim() })} />
-              <textarea placeholder="Descrição" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+              <input id="product-price-cents" name="priceCents" type="number" min={0} step={1} placeholder="Preço em centavos (ex: 1000 para R$ 10,00)" value={form.priceCents} onChange={(e) => setForm({ ...form, priceCents: Number(e.target.value) })} />
+              <input id="product-price-label" name="priceLabel" placeholder="Preço label (ex: R$ 10,00)" value={form.priceLabel} onChange={(e) => setForm({ ...form, priceLabel: e.target.value })} />
+              <input id="product-stripe-price-id" name="stripePriceId" placeholder="Stripe Price ID (price_...)" value={form.stripePriceId} onChange={(e) => setForm({ ...form, stripePriceId: e.target.value.trim() })} />
+              <textarea id="product-description" name="description" placeholder="Descrição" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
               <div style={{ display: "grid", gap: 8 }}>
                 <label>PDF do produto (upload)</label>
                 <input
+                  id="product-pdf-upload"
+                  name="productPdf"
                   type="file"
                   accept="application/pdf"
                   onChange={async (e) => {
@@ -294,12 +298,14 @@ export default function AdminPage() {
                     }
                   }}
                 />
-                <input placeholder="URL do PDF (preenchido automaticamente)" value={form.pdfUrl} onChange={(e) => setForm({ ...form, pdfUrl: e.target.value })} />
+                <input id="product-pdf-url" name="pdfUrl" placeholder="URL do PDF (preenchido automaticamente)" value={form.pdfUrl} onChange={(e) => setForm({ ...form, pdfUrl: e.target.value })} />
               </div>
 
               <div style={{ display: "grid", gap: 8 }}>
                 <label>Imagem de capa (upload)</label>
                 <input
+                  id="product-cover-upload"
+                  name="productCover"
                   type="file"
                   accept="image/*"
                   onChange={async (e) => {
@@ -319,12 +325,14 @@ export default function AdminPage() {
                     }
                   }}
                 />
-                <input placeholder="URL da capa (preenchido automaticamente)" value={form.coverImageUrl} onChange={(e) => setForm({ ...form, coverImageUrl: e.target.value })} />
+                <input id="product-cover-url" name="coverImageUrl" placeholder="URL da capa (preenchido automaticamente)" value={form.coverImageUrl} onChange={(e) => setForm({ ...form, coverImageUrl: e.target.value })} />
               </div>
 
               <div style={{ display: "grid", gap: 8 }}>
                 <label>Galeria de imagens (upload múltiplo)</label>
                 <input
+                  id="product-gallery-upload"
+                  name="productGallery"
                   type="file"
                   accept="image/*"
                   multiple
@@ -351,9 +359,9 @@ export default function AdminPage() {
                     }
                   }}
                 />
-                <textarea placeholder="URLs da galeria (preenchido automaticamente; 1 por linha)" value={form.galleryUrls} onChange={(e) => setForm({ ...form, galleryUrls: e.target.value })} />
+                <textarea id="product-gallery-urls" name="galleryUrls" placeholder="URLs da galeria (preenchido automaticamente; 1 por linha)" value={form.galleryUrls} onChange={(e) => setForm({ ...form, galleryUrls: e.target.value })} />
               </div>
-              <label><input type="checkbox" checked={form.active} onChange={(e) => setForm({ ...form, active: e.target.checked })} /> Ativo</label>
+              <label><input id="product-active" name="active" type="checkbox" checked={form.active} onChange={(e) => setForm({ ...form, active: e.target.checked })} /> Ativo</label>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                 <button type="submit" disabled={loading || uploadingPdf || uploadingCover || uploadingGallery}>
                   {editingProductId ? "Atualizar produto" : "Salvar produto"}

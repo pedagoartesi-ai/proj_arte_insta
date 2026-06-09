@@ -584,6 +584,8 @@ export function ProjetoArteStorefront({
                 </div>
                 <div className="checkout-actions">
                   <input
+                    id="buyer-email"
+                    name="buyerEmail"
                     type="email"
                     placeholder="Email do comprador"
                     value={emailInput}
@@ -595,6 +597,8 @@ export function ProjetoArteStorefront({
                   </button>
                   <div className="verification-row">
                     <input
+                      id="buyer-verification-code"
+                      name="buyerVerificationCode"
                       type="text"
                       inputMode="numeric"
                       placeholder="Código de 6 dígitos"
@@ -703,6 +707,8 @@ export function ProjetoArteStorefront({
                     <label>
                       Seu email
                       <input
+                        id="contact-sender-email"
+                        name="contactSenderEmail"
                         type="email"
                         value={contactSenderEmail}
                         onChange={(e) => setContactSenderEmail(e.target.value)}
@@ -713,6 +719,8 @@ export function ProjetoArteStorefront({
                     <label>
                       WhatsApp
                       <input
+                        id="contact-sender-whatsapp"
+                        name="contactSenderWhatsapp"
                         type="text"
                         value={contactSenderWhatsapp}
                         onChange={(e) => setContactSenderWhatsapp(e.target.value)}
@@ -723,6 +731,8 @@ export function ProjetoArteStorefront({
                     <label>
                       Assunto
                       <input
+                        id="contact-email-subject"
+                        name="contactEmailSubject"
                         type="text"
                         value={contactEmailSubject}
                         onChange={(e) => setContactEmailSubject(e.target.value)}
@@ -732,6 +742,8 @@ export function ProjetoArteStorefront({
                     <label>
                       Mensagem
                       <textarea
+                        id="contact-email-body"
+                        name="contactEmailBody"
                         value={contactEmailBody}
                         onChange={(e) => setContactEmailBody(e.target.value)}
                         placeholder="Escreva sua mensagem para pedagoartesi@gmail.com"
