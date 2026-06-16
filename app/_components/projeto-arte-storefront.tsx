@@ -169,20 +169,34 @@ export function ProjetoArteStorefront({
     let cancelled = false;
 
     async function mountCheckout() {
-      if (!window.Stripe) return;
+      if (!window.Stripe) {
+        if (!cancelled) {
+          setCheckoutStatus("error");
+          setCheckoutMessage("Stripe.js ainda não carregou. Atualize a página e tente novamente.");
+        }
+        return;
+      }
 
       embeddedCheckoutInstance.current?.unmount?.();
       embeddedCheckoutInstance.current = null;
       embeddedCheckoutRef.current!.innerHTML = "";
 
-      const stripe = window.Stripe(stripePublishableKey);
-      const checkout = stripe.initEmbeddedCheckout({
-        fetchClientSecret: async () => clientSecret,
-      });
+      try {
+        const stripe = window.Stripe(stripePublishableKey);
+        const checkout = await stripe.initEmbeddedCheckout({
+          fetchClientSecret: async () => clientSecret,
+        });
 
-      if (cancelled) return;
-      checkout.mount(embeddedCheckoutRef.current!);
-      embeddedCheckoutInstance.current = checkout;
+        if (cancelled) return;
+        checkout.mount(embeddedCheckoutRef.current!);
+        embeddedCheckoutInstance.current = checkout;
+      } catch (error) {
+        if (!cancelled) {
+          console.error("Failed to mount embedded checkout", error);
+          setCheckoutStatus("error");
+          setCheckoutMessage("Não foi possível carregar o checkout do Stripe.");
+        }
+      }
     }
 
     void mountCheckout();
