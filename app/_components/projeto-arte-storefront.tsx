@@ -384,7 +384,7 @@ export function ProjetoArteStorefront({
 
     setClientSecret(data.clientSecret);
     setCheckoutStatus("ready");
-    setCheckoutMessage("Checkout embutido pronto.");
+    setCheckoutMessage(data.paymentMethodWarning ?? "Checkout embutido pronto.");
     setCartOpen(true);
   }
 

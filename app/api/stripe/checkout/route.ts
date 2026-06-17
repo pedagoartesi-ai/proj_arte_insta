@@ -5,6 +5,12 @@ import { checkoutSchema } from "@/lib/proj-arte/schemas";
 import { getPublicUrl, getStripeConfig } from "@/lib/proj-arte/env";
 import { verifyBuyerEmailToken } from "@/lib/proj-arte/buyer-verification";
 
+function isPixUnavailableError(error: unknown) {
+  if (!(error instanceof Stripe.errors.StripeInvalidRequestError)) return false;
+  const message = error.message.toLowerCase();
+  return error.param === "payment_method_types" && message.includes("pix");
+}
+
 export async function POST(request: NextRequest) {
   const config = getStripeConfig();
   if (!config.secretKey) {
@@ -44,20 +50,35 @@ export async function POST(request: NextRequest) {
   }
 
   const stripe = new Stripe(config.secretKey, { apiVersion: "2026-04-22.dahlia" });
-  const session = await stripe.checkout.sessions.create({
-    mode: "payment",
-    ui_mode: "embedded_page",
-    payment_method_types: ["card", "pix"],
-    line_items: lineItems,
-    customer_email: parsed.data.buyerEmail,
-    return_url:
-      parsed.data.returnUrl ?? `${getPublicUrl()}/obrigado?session_id={CHECKOUT_SESSION_ID}`,
-    redirect_on_completion: "if_required",
-    metadata: {
-      productIds: productRefs.join(","),
-      buyerEmail: parsed.data.buyerEmail,
-    },
-  });
+  const createSession = (paymentMethodTypes: Array<"card" | "pix">) =>
+    stripe.checkout.sessions.create({
+      mode: "payment",
+      ui_mode: "embedded_page",
+      payment_method_types: paymentMethodTypes,
+      line_items: lineItems,
+      customer_email: parsed.data.buyerEmail,
+      return_url:
+        parsed.data.returnUrl ?? `${getPublicUrl()}/obrigado?session_id={CHECKOUT_SESSION_ID}`,
+      redirect_on_completion: "if_required",
+      metadata: {
+        productIds: productRefs.join(","),
+        buyerEmail: parsed.data.buyerEmail,
+      },
+    });
 
-  return NextResponse.json({ clientSecret: session.client_secret, id: session.id });
+  let paymentMethodWarning: string | null = null;
+  let session: Stripe.Checkout.Session;
+  try {
+    session = await createSession(["card", "pix"]);
+  } catch (error) {
+    if (!isPixUnavailableError(error)) {
+      console.error("Failed to create Stripe checkout session", error);
+      return NextResponse.json({ error: "stripe_checkout_failed" }, { status: 502 });
+    }
+
+    paymentMethodWarning = "Pix ainda não está habilitado na conta Stripe live. Checkout aberto apenas com cartão.";
+    session = await createSession(["card"]);
+  }
+
+  return NextResponse.json({ clientSecret: session.client_secret, id: session.id, paymentMethodWarning });
 }
