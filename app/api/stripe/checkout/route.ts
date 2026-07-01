@@ -11,6 +11,21 @@ function isPixUnavailableError(error: unknown) {
   return error.param === "payment_method_types" && message.includes("pix");
 }
 
+type DynamicCheckoutLineItem = {
+  quantity: number;
+  price_data: {
+    currency: "brl";
+    unit_amount: number;
+    metadata: Record<string, string>;
+    product_data: {
+      name: string;
+      description?: string;
+      images?: string[];
+      metadata: Record<string, string>;
+    };
+  };
+};
+
 export async function POST(request: NextRequest) {
   const config = getStripeConfig();
   if (!config.secretKey) {
@@ -30,7 +45,7 @@ export async function POST(request: NextRequest) {
 
   const catalog = await listProducts({ onlyActive: true, limit: 1000 });
   const catalogMap = new Map(catalog.data.map((item) => [item.id, item]));
-  const lineItems: Array<{ price: string; quantity: number }> = [];
+  const lineItems: DynamicCheckoutLineItem[] = [];
   const productRefs: string[] = [];
 
   for (const item of parsed.data.items) {
@@ -41,11 +56,30 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "product_not_found", productId: item.productId }, { status: 404 });
     }
 
-    if (!product.stripePriceId) {
-      return NextResponse.json({ error: "stripe_price_missing", productId: item.productId }, { status: 409 });
+    if (!product.priceCents || product.priceCents <= 0) {
+      return NextResponse.json({ error: "invalid_product_price", productId: item.productId }, { status: 409 });
     }
 
-    lineItems.push({ price: product.stripePriceId, quantity: item.quantity });
+    lineItems.push({
+      quantity: item.quantity,
+      price_data: {
+        currency: "brl",
+        unit_amount: product.priceCents,
+        metadata: {
+          productId: product.id,
+          productSlug: product.slug,
+        },
+        product_data: {
+          name: product.title,
+          description: product.description || undefined,
+          images: product.coverImageUrl ? [product.coverImageUrl] : undefined,
+          metadata: {
+            productId: product.id,
+            productSlug: product.slug,
+          },
+        },
+      },
+    });
     productRefs.push(product.id);
   }
 

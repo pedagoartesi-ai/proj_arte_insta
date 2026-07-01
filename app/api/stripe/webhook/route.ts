@@ -7,9 +7,23 @@ import { getSupabaseAdminClient } from "@/lib/proj-arte/supabase";
 type ProductRow = {
   id: string;
   title: string;
-  stripe_price_id: string | null;
   pdf_url: string | null;
 };
+
+function getLineItemPriceId(item: Stripe.LineItem) {
+  return typeof item.price === "string" ? item.price : item.price?.id ?? null;
+}
+
+function getLineItemProductId(item: Stripe.LineItem) {
+  if (typeof item.price === "string") return null;
+  const productIdFromPrice = item.price?.metadata?.productId;
+  if (productIdFromPrice) return productIdFromPrice;
+
+  const stripeProduct = item.price?.product;
+  if (!stripeProduct || typeof stripeProduct === "string") return null;
+  if ("deleted" in stripeProduct && stripeProduct.deleted) return null;
+  return stripeProduct.metadata?.productId ?? null;
+}
 
 export async function POST(request: Request) {
   const config = getStripeConfig();
@@ -51,19 +65,24 @@ export async function POST(request: Request) {
   try {
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
-      const lineItems = await stripe.checkout.sessions.listLineItems(session.id, { limit: 100 });
-      const priceIds = lineItems.data
-        .map((item) => (typeof item.price === "string" ? item.price : item.price?.id))
+      const lineItems = await stripe.checkout.sessions.listLineItems(session.id, {
+        limit: 100,
+        expand: ["data.price.product"],
+      });
+      const productIds = lineItems.data
+        .map(getLineItemProductId)
         .filter(Boolean) as string[];
 
-      const { data: productRows } = await supabase
-        .from("products")
-        .select("id,title,stripe_price_id,pdf_url")
-        .in("stripe_price_id", priceIds);
+      const { data: productRows } = productIds.length
+        ? await supabase
+            .from("products")
+            .select("id,title,pdf_url")
+            .in("id", productIds)
+        : { data: [] as ProductRow[] };
 
-      const productByPriceId = new Map<string, ProductRow>();
+      const productById = new Map<string, ProductRow>();
       for (const row of productRows ?? []) {
-        if (row.stripe_price_id) productByPriceId.set(row.stripe_price_id, row);
+        productById.set(row.id, row);
       }
 
       const { data: orderRow, error: orderError } = await supabase
@@ -90,8 +109,9 @@ export async function POST(request: Request) {
       }
 
       const orderItems = lineItems.data.map((item) => {
-        const priceId = typeof item.price === "string" ? item.price : item.price?.id ?? null;
-        const product = priceId ? productByPriceId.get(priceId) : undefined;
+        const priceId = getLineItemPriceId(item);
+        const productId = getLineItemProductId(item);
+        const product = productId ? productById.get(productId) : undefined;
         return {
           order_id: orderRow.id,
           product_id: product?.id ?? null,

@@ -43,8 +43,6 @@ const emptyForm = {
   coverImageUrl: "",
   galleryUrls: "",
   checkoutUrl: "",
-  stripePriceId: "",
-  stripeProductId: "",
   featured: false,
   active: true,
   sortOrder: 0,
@@ -154,8 +152,6 @@ export default function AdminPage() {
       pdfUrl: form.pdfUrl || null,
       coverImageUrl: form.coverImageUrl || null,
       checkoutUrl: form.checkoutUrl || null,
-      stripePriceId: form.stripePriceId || null,
-      stripeProductId: form.stripeProductId || null,
       priceLabel: formatBRLFromCents(Number(form.priceCents)),
     };
 
@@ -191,8 +187,6 @@ export default function AdminPage() {
       coverImageUrl: product.coverImageUrl ?? "",
       galleryUrls: product.galleryUrls.join("\n"),
       checkoutUrl: product.checkoutUrl ?? "",
-      stripePriceId: product.stripePriceId ?? "",
-      stripeProductId: product.stripeProductId ?? "",
       featured: product.featured,
       active: product.active,
       sortOrder: product.sortOrder,
@@ -245,7 +239,7 @@ export default function AdminPage() {
   return (
     <main style={{ padding: 24, maxWidth: 1200, margin: "0 auto", fontFamily: "system-ui, sans-serif" }}>
       <h1>Admin — Artes que Ensinam</h1>
-      <p>Cadastro enxuto para publicar material, ligar o preço do Stripe e testar entrega do PDF.</p>
+      <p>Cadastro enxuto para publicar material, definir preço e testar entrega do PDF.</p>
       {message ? <p>{message}</p> : null}
 
       {!isAuthenticated ? (
@@ -293,7 +287,6 @@ export default function AdminPage() {
                 value={form.priceCents / 100}
                 onChange={(e) => setForm({ ...form, priceCents: centsFromReaisInput(e.target.value) })}
               />
-              <input id="product-stripe-price-id" name="stripePriceId" placeholder="Stripe Price ID (price_...)" value={form.stripePriceId} onChange={(e) => setForm({ ...form, stripePriceId: e.target.value.trim() })} />
               <textarea id="product-description" name="description" placeholder="Descrição" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
               <div style={{ display: "grid", gap: 8 }}>
                 <label>PDF do produto (upload)</label>
@@ -400,7 +393,7 @@ export default function AdminPage() {
                   <strong>{product.title}</strong>
                   <div>{product.activityTypeSlug}</div>
                   <div>{formatBRLFromCents(product.priceCents)}</div>
-                  <div>Stripe: {product.stripePriceId ? product.stripePriceId : "pendente"}</div>
+                  <div>Checkout: automático pelo carrinho</div>
                   <div>PDF: {product.pdfUrl ? "preenchido" : "pendente"}</div>
                   <div>Status: {product.active ? "Ativo" : "Inativo"}</div>
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
